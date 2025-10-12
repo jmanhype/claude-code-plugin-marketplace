@@ -1,0 +1,126 @@
+{
+  "name": "modular-agentic-dev",
+  "displayName": "Modular Agentic Development",
+  "version": "1.0.0",
+  "description": "Structured framework for session-based, agent-driven development with modular prompts, audit checkpoints, subagent roles, and simulation harnesses. Inspired by Mitchell Hashimoto's Ghostty workflow.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "commands": [
+    {
+      "name": "session-plan",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/workflows/session-plan.md",
+      "description": "Initialize a new AI development session with planning phase"
+    },
+    {
+      "name": "session-scaffold",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/workflows/session-scaffold.md",
+      "description": "Scaffold project structure from session plan"
+    },
+    {
+      "name": "session-simulate",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/workflows/session-simulate.md",
+      "description": "Run simulations and test harness against current code"
+    },
+    {
+      "name": "session-cleanup",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/workflows/session-cleanup.md",
+      "description": "Clean and normalize session outputs"
+    },
+    {
+      "name": "session-finalize",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/workflows/session-finalize.md",
+      "description": "Finalize session with human review and approval"
+    }
+  ],
+  "agents": [
+    {
+      "name": "planner",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/planner.md",
+      "description": "High-level task planning and decomposition agent"
+    },
+    {
+      "name": "coder",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/coder.md",
+      "description": "Implementation specialist for writing clean, efficient code"
+    },
+    {
+      "name": "reviewer",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/reviewer.md",
+      "description": "Code review and quality assurance specialist"
+    },
+    {
+      "name": "tester",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/tester.md",
+      "description": "Comprehensive testing and quality assurance specialist"
+    },
+    {
+      "name": "researcher",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/researcher.md",
+      "description": "Deep research and information gathering specialist"
+    }
+  ],
+  "hooks": [
+    {
+      "name": "pre_prompt_validator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/pre_prompt.sh",
+      "type": "pre_prompt",
+      "description": "Validate and normalize prompts before AI processing"
+    },
+    {
+      "name": "post_diff_tester",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/post_diff.sh",
+      "type": "post_diff",
+      "description": "Run tests after code generation and validate outputs"
+    },
+    {
+      "name": "session_logger",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/session_logger.sh",
+      "type": "post_run",
+      "description": "Log all session interactions for audit trail"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "agentic-development",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/agentic-development.md",
+      "description": "Complete agentic development workflow from planning to finalization"
+    },
+    {
+      "name": "session-lifecycle",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/session-lifecycle.md",
+      "description": "Session lifecycle management with checkpoints and audits"
+    }
+  ],
+  "mcp": [
+    {
+      "name": "conductor",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/mcp/conductor-config.json",
+      "description": "State management and session coordination via Conductor cockpit"
+    }
+  ],
+  "helpers": [
+    {
+      "name": "session-init",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/session-init.sh",
+      "description": "Initialize session directory structure and metadata"
+    },
+    {
+      "name": "audit-check",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/audit-check.sh",
+      "description": "Validate session audit trail and maturity checkpoints"
+    }
+  ],
+  "tags": ["agentic", "session-management", "workflow", "development", "simulation", "audit"],
+  "category": "methodology",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/workflows/agentic-development.md",
+  "configuration": {
+    "required": {},
+    "optional": {
+      "SESSION_DIR": "Directory for session logs and artifacts (default: .claude/sessions)",
+      "AUDIT_LEVEL": "Audit verbosity level: minimal, standard, full (default: standard)",
+      "SIMULATION_MODE": "Enable simulation harness: true/false (default: false)"
+    }
+  }
+}

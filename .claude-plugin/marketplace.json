@@ -6,6 +6,11 @@
   },
   "plugins": [
     {
+      "name": "modular-agentic-dev",
+      "source": "./plugins/modular-agentic-dev",
+      "description": "Structured framework for session-based, agent-driven development with modular prompts and audit checkpoints"
+    },
+    {
       "name": "quant-trading-system",
       "source": "./plugins/quant-trading-system",
       "description": "Complete quantitative trading stack with risk management, circuit breakers, and execution hooks"

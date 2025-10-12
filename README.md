@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-blue)](https://docs.claude.com/en/docs/claude-code)
-[![Plugins: 19](https://img.shields.io/badge/Plugins-19-green)](https://github.com/jmanhype/claude-code-plugins)
+[![Plugins: 20](https://img.shields.io/badge/Plugins-20-green)](https://github.com/jmanhype/claude-code-plugins)
 
 ## 🚀 Quick Start
 
@@ -96,6 +96,7 @@ Advanced swarm patterns:
 
 | Plugin | Category | Description |
 |--------|----------|-------------|
+| `modular-agentic-dev` | Methodology | Session-based agentic development framework |
 | `quant-trading-system` | Trading | Complete quantitative trading stack |
 | `research-execution-pipeline` | Research | DSPy research + GEPA optimization |
 | `github-automation-suite` | GitHub | 13 GitHub automation agents |
