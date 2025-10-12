@@ -1,0 +1,25 @@
+{
+  "name": "memory-coordination",
+  "displayName": "Memory & Task Coordination",
+  "version": "1.0.0",
+  "description": "Memory management and task orchestration for complex multi-agent workflows.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "memory-coordinator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/templates/memory-coordinator.md",
+      "description": "Manage persistent memory across sessions and facilitate cross-agent memory sharing"
+    },
+    {
+      "name": "task-orchestrator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/templates/orchestrator-task.md",
+      "description": "Central coordination agent for task decomposition, execution planning, and result synthesis"
+    }
+  ],
+  "tags": ["memory", "coordination", "tasks", "orchestration", "state-management"],
+  "category": "coordination",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/templates/CLAUDE.md"
+}

@@ -1,0 +1,40 @@
+{
+  "name": "performance-optimization",
+  "displayName": "Performance Optimization",
+  "version": "1.0.0",
+  "description": "Load balancing, resource allocation, and performance benchmarking tools.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "performance-monitor",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/optimization/performance-monitor.md",
+      "description": "Performance monitoring and analysis"
+    },
+    {
+      "name": "load-balancer",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/optimization/load-balancer.md",
+      "description": "Load balancing optimization"
+    },
+    {
+      "name": "resource-allocator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/optimization/resource-allocator.md",
+      "description": "Resource allocation and optimization"
+    },
+    {
+      "name": "benchmark-suite",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/optimization/benchmark-suite.md",
+      "description": "Comprehensive benchmarking tools"
+    },
+    {
+      "name": "topology-optimizer",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/optimization/topology-optimizer.md",
+      "description": "Network topology optimization"
+    }
+  ],
+  "tags": ["performance", "optimization", "benchmarking", "resources", "load-balancing"],
+  "category": "optimization",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/optimization/README.md"
+}

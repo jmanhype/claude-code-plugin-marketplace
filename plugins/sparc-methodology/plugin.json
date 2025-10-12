@@ -1,0 +1,25 @@
+{
+  "name": "sparc-methodology",
+  "displayName": "SPARC Methodology",
+  "version": "1.0.0",
+  "description": "SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) agents and coordinator templates for systematic development.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "sparc-coordinator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/templates/sparc-coordinator.md",
+      "description": "SPARC methodology orchestrator for systematic development phase coordination"
+    },
+    {
+      "name": "sparc-coder",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/templates/implementer-sparc-coder.md",
+      "description": "Transform specifications into working code with TDD practices"
+    }
+  ],
+  "tags": ["sparc", "methodology", "templates", "development", "systematic"],
+  "category": "methodology",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/templates/CLAUDE.md"
+}

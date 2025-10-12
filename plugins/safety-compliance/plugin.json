@@ -1,0 +1,39 @@
+{
+  "name": "safety-compliance",
+  "displayName": "Safety & Compliance",
+  "version": "1.0.0",
+  "description": "Circuit breakers, kill switches, approval guards, and safety mechanisms for production trading systems.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "hooks": [
+    {
+      "name": "circuit_breaker",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/circuit_breaker.sh",
+      "type": "pre_run",
+      "description": "Automatic circuit breaker for risk/latency errors"
+    },
+    {
+      "name": "guard_approve",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/guard_approve.sh",
+      "type": "pre_run",
+      "description": "Manual approval guard for live operations"
+    },
+    {
+      "name": "kill_switch",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/kill_switch.sh",
+      "type": "manual",
+      "description": "Emergency kill switch for all operations"
+    },
+    {
+      "name": "verify_gate",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/verify_gate.sh",
+      "type": "pre_run",
+      "description": "Verification gate for safety checks"
+    }
+  ],
+  "tags": ["safety", "compliance", "guards", "circuit-breaker", "kill-switch"],
+  "category": "safety",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/hooks/CLAUDE.md"
+}

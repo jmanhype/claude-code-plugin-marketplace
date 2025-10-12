@@ -1,0 +1,20 @@
+{
+  "name": "architecture-design",
+  "displayName": "Architecture & System Design",
+  "version": "1.0.0",
+  "description": "System architecture agents, design patterns, and architectural decision support.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "system-architect",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/architecture/system-design/arch-system-design.md",
+      "description": "Expert agent for system architecture design, patterns, and high-level technical decisions"
+    }
+  ],
+  "tags": ["architecture", "design", "patterns", "system-design", "technical-decisions"],
+  "category": "architecture",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/architecture/CLAUDE.md"
+}

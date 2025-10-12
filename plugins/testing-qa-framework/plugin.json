@@ -1,0 +1,30 @@
+{
+  "name": "testing-qa-framework",
+  "displayName": "Testing & QA Framework",
+  "version": "1.0.0",
+  "description": "TDD London School agents, production validators, and comprehensive test automation. Build quality into every step.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "tester",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/tester.md",
+      "description": "Comprehensive testing and quality assurance specialist"
+    },
+    {
+      "name": "tdd-london-swarm",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/testing/unit/tdd-london-swarm.md",
+      "description": "TDD London School specialist for mock-driven development"
+    },
+    {
+      "name": "production-validator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/testing/validation/production-validator.md",
+      "description": "Production validation specialist ensuring deployment readiness"
+    }
+  ],
+  "tags": ["testing", "tdd", "qa", "validation", "quality"],
+  "category": "testing",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/testing/CLAUDE.md"
+}

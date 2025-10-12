@@ -1,0 +1,20 @@
+{
+  "name": "base-template-generator",
+  "displayName": "Base Template Generator",
+  "version": "1.0.0",
+  "description": "Project scaffolding, boilerplate generation, and foundational template creation for new projects and components.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "base-template-generator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/base-template-generator.md",
+      "description": "Create foundational templates, boilerplate code, and starter configurations"
+    }
+  ],
+  "tags": ["templates", "scaffolding", "boilerplate", "generator", "starter"],
+  "category": "templates",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/MIGRATION_SUMMARY.md"
+}

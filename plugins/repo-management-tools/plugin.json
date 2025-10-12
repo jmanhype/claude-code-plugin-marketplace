@@ -1,0 +1,45 @@
+{
+  "name": "repo-management-tools",
+  "displayName": "Repository Management Tools",
+  "version": "1.0.0",
+  "description": "Multi-repo coordination, synchronization, and architecture management. Perfect for managing monorepos and multi-package projects.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "repo-architect",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/repo-architect.md",
+      "description": "Repository structure optimization"
+    },
+    {
+      "name": "sync-coordinator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/sync-coordinator.md",
+      "description": "Multi-repository synchronization coordinator"
+    },
+    {
+      "name": "multi-repo-swarm",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/multi-repo-swarm.md",
+      "description": "Cross-repository swarm orchestration"
+    }
+  ],
+  "helpers": [
+    {
+      "name": "github-setup",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/github-setup.sh",
+      "description": "Setup GitHub integration"
+    }
+  ],
+  "tags": ["git", "monorepo", "multi-repo", "coordination", "sync"],
+  "category": "github",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/github/CLAUDE.md",
+  "configuration": {
+    "required": {
+      "GITHUB_TOKEN": "GitHub personal access token"
+    },
+    "optional": {
+      "GITHUB_ORG": "GitHub organization name"
+    }
+  }
+}

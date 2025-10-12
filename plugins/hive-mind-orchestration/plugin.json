@@ -1,0 +1,13 @@
+{
+  "name": "hive-mind-orchestration",
+  "displayName": "Hive Mind Orchestration",
+  "version": "1.0.0",
+  "description": "Distributed decision-making and collective intelligence orchestration for swarm systems.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "tags": ["hive-mind", "distributed", "orchestration", "swarm", "collective-intelligence"],
+  "category": "swarm",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/hive-mind/CLAUDE.md"
+}

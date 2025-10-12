@@ -1,0 +1,27 @@
+{
+  "name": "market-intelligence",
+  "displayName": "Market Intelligence",
+  "version": "1.0.0",
+  "description": "Market analysis, monitoring, and intelligence gathering for trading and financial applications.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "code-analyzer",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/analysis/code-analyzer.md",
+      "description": "Advanced code quality analysis for market analysis tools"
+    }
+  ],
+  "commands": [
+    {
+      "name": "ccxt-exchange",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/ccxt-exchange.md",
+      "description": "CCXT exchange data and market intelligence"
+    }
+  ],
+  "tags": ["market", "analysis", "trading", "intelligence", "monitoring"],
+  "category": "trading",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/workflows/crypto-trader.md"
+}

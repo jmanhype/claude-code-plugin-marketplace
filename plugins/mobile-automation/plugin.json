@@ -1,0 +1,39 @@
+{
+  "name": "mobile-automation",
+  "displayName": "Mobile Development & Automation",
+  "version": "1.0.0",
+  "description": "ClassDojo workflow automation and React Native mobile development agents.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "classdojo-mobile-automation",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/specialized/mobile/classdojo-mobile-automation.md",
+      "description": "Mobile automation specialist for ClassDojo app"
+    },
+    {
+      "name": "mobile-dev",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/specialized/mobile/spec-mobile-react-native.md",
+      "description": "Expert agent for React Native mobile application development"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "mobile-automation-workflows",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/mobile-automation-workflows.md",
+      "description": "Mobile automation workflow patterns"
+    }
+  ],
+  "helpers": [
+    {
+      "name": "mobile-setup",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/mobile-setup.sh",
+      "description": "Mobile development environment setup"
+    }
+  ],
+  "tags": ["mobile", "react-native", "automation", "classdojo", "ios", "android"],
+  "category": "mobile",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/specialized/mobile/CLAUDE.md"
+}

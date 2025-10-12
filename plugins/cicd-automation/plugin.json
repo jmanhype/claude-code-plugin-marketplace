@@ -1,0 +1,30 @@
+{
+  "name": "cicd-automation",
+  "displayName": "CI/CD Automation",
+  "version": "1.0.0",
+  "description": "GitHub Actions workflows, DevOps automation, and CI/CD pipeline management.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "cicd-engineer",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/devops/ci-cd/ops-cicd-github.md",
+      "description": "Specialized agent for GitHub Actions CI/CD pipeline creation and optimization"
+    },
+    {
+      "name": "workflow-automation",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/workflow-automation.md",
+      "description": "GitHub Actions workflow automation agent"
+    }
+  ],
+  "tags": ["cicd", "github-actions", "devops", "automation", "pipelines"],
+  "category": "devops",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/devops/CLAUDE.md",
+  "configuration": {
+    "required": {
+      "GITHUB_TOKEN": "GitHub personal access token"
+    }
+  }
+}
