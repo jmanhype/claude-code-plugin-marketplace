@@ -1,0 +1,59 @@
+{
+  "name": "consensus-protocols",
+  "displayName": "Consensus Protocols",
+  "version": "1.0.0",
+  "description": "Byzantine fault-tolerant consensus, Raft, CRDT, gossip protocols, and quorum management for distributed systems. Production-ready consensus algorithms.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "byzantine-coordinator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/consensus/byzantine-coordinator.md",
+      "description": "Byzantine fault-tolerant consensus with malicious actor detection"
+    },
+    {
+      "name": "raft-manager",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/consensus/raft-manager.md",
+      "description": "Raft consensus with leader election and log replication"
+    },
+    {
+      "name": "crdt-synchronizer",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/consensus/crdt-synchronizer.md",
+      "description": "Conflict-free replicated data types for eventual consistency"
+    },
+    {
+      "name": "gossip-coordinator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/consensus/gossip-coordinator.md",
+      "description": "Gossip-based consensus for scalable eventually consistent systems"
+    },
+    {
+      "name": "quorum-manager",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/consensus/quorum-manager.md",
+      "description": "Dynamic quorum adjustment and intelligent membership management"
+    },
+    {
+      "name": "security-manager",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/consensus/security-manager.md",
+      "description": "Comprehensive security mechanisms for distributed consensus"
+    },
+    {
+      "name": "performance-benchmarker",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/consensus/performance-benchmarker.md",
+      "description": "Performance benchmarking for distributed consensus protocols"
+    }
+  ],
+  "tags": ["consensus", "distributed", "byzantine", "raft", "crdt", "gossip", "blockchain"],
+  "category": "distributed-systems",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/consensus/README.md",
+  "screenshots": [],
+  "dependencies": [],
+  "configuration": {
+    "required": {},
+    "optional": {
+      "CONSENSUS_PROTOCOL": "Default consensus protocol (byzantine/raft/gossip)",
+      "QUORUM_SIZE": "Minimum quorum size for consensus decisions"
+    }
+  }
+}

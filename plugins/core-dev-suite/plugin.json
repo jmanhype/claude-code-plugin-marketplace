@@ -1,0 +1,46 @@
+{
+  "name": "core-dev-suite",
+  "displayName": "Core Development Suite",
+  "version": "1.0.0",
+  "description": "Essential development agents: planner, coder, reviewer, tester, and researcher. Your complete development workflow in one package.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "planner",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/planner.md",
+      "description": "Strategic planning and task orchestration"
+    },
+    {
+      "name": "coder",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/coder.md",
+      "description": "Implementation specialist for clean, efficient code"
+    },
+    {
+      "name": "reviewer",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/reviewer.md",
+      "description": "Code review and quality assurance"
+    },
+    {
+      "name": "tester",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/tester.md",
+      "description": "Comprehensive testing and QA"
+    },
+    {
+      "name": "researcher",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/core/researcher.md",
+      "description": "Deep research and information gathering"
+    }
+  ],
+  "tags": ["development", "coding", "testing", "review", "planning", "research"],
+  "category": "development",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/core/CLAUDE.md",
+  "screenshots": [],
+  "dependencies": [],
+  "configuration": {
+    "required": {},
+    "optional": {}
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "name": "quant-trading-system",
+  "displayName": "Quantitative Trading System",
+  "version": "1.0.0",
+  "description": "Complete quantitative trading stack with risk management, circuit breakers, and execution hooks. Includes DSPy-powered strategy optimization and real-time safety guards.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "risk-manager",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/trading/risk-manager.md",
+      "description": "Multi-layer risk validation and position sizing"
+    }
+  ],
+  "commands": [
+    {
+      "name": "ccxt-exchange",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/ccxt-exchange.md",
+      "description": "CCXT exchange integration commands"
+    },
+    {
+      "name": "metrics-write",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/metrics.write.md",
+      "description": "Write trading metrics to database"
+    }
+  ],
+  "hooks": [
+    {
+      "name": "pre_trade",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/pre_trade.sh",
+      "type": "pre_run",
+      "description": "Pre-trade validation and risk checks"
+    },
+    {
+      "name": "post_trade",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/post_trade.sh",
+      "type": "post_run",
+      "description": "Post-trade logging and metrics"
+    },
+    {
+      "name": "circuit_breaker",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/circuit_breaker.sh",
+      "type": "pre_run",
+      "description": "Automatic circuit breaker for risk/latency errors"
+    },
+    {
+      "name": "guard_approve",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/guard_approve.sh",
+      "type": "pre_run",
+      "description": "Manual approval guard for live trading"
+    },
+    {
+      "name": "kill_switch",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/kill_switch.sh",
+      "type": "manual",
+      "description": "Emergency kill switch for all trading"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "crypto-trader",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/crypto-trader.md",
+      "description": "5-minute crypto trading loop (paper/live)"
+    },
+    {
+      "name": "quant-trading",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/quant-trading-workflow.md",
+      "description": "Complete quantitative trading workflow"
+    }
+  ],
+  "mcp": [
+    {
+      "name": "ccxt",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/mcp/ccxt-config.json",
+      "description": "CCXT cryptocurrency exchange integration"
+    }
+  ],
+  "helpers": [
+    {
+      "name": "quant-setup",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/quant-setup.sh",
+      "description": "Setup script for quant trading environment"
+    }
+  ],
+  "tags": ["trading", "quant", "risk-management", "finance", "automation", "crypto"],
+  "category": "trading",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/workflows/crypto-trader.md",
+  "screenshots": [],
+  "dependencies": [],
+  "configuration": {
+    "required": {
+      "EXCHANGE_API_KEY": "API key for crypto exchange",
+      "EXCHANGE_SECRET": "API secret for crypto exchange"
+    },
+    "optional": {
+      "PAPER_TRADING": "Set to true for paper trading mode (default: true)",
+      "TRADE_INTERVAL": "Trading interval in minutes (default: 5)"
+    }
+  }
+}

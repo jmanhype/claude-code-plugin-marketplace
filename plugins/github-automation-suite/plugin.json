@@ -1,0 +1,105 @@
+{
+  "name": "github-automation-suite",
+  "displayName": "GitHub Automation Suite",
+  "version": "1.0.0",
+  "description": "13 specialized GitHub agents for PR management, code reviews, issue tracking, releases, and project boards. Automate your entire GitHub workflow.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "pr-manager",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/pr-manager.md",
+      "description": "Comprehensive pull request management"
+    },
+    {
+      "name": "code-review-swarm",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/code-review-swarm.md",
+      "description": "Multi-agent code review swarm"
+    },
+    {
+      "name": "issue-tracker",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/issue-tracker.md",
+      "description": "Intelligent issue management and tracking"
+    },
+    {
+      "name": "release-manager",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/release-manager.md",
+      "description": "Automated release coordination and deployment"
+    },
+    {
+      "name": "release-swarm",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/release-swarm.md",
+      "description": "Multi-agent release orchestration"
+    },
+    {
+      "name": "swarm-pr",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/swarm-pr.md",
+      "description": "PR swarm management and coordination"
+    },
+    {
+      "name": "swarm-issue",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/swarm-issue.md",
+      "description": "Issue-based swarm coordination"
+    },
+    {
+      "name": "project-board-sync",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/project-board-sync.md",
+      "description": "Sync AI swarms with GitHub Projects"
+    },
+    {
+      "name": "github-modes",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/github-modes.md",
+      "description": "Comprehensive GitHub integration modes"
+    },
+    {
+      "name": "workflow-automation",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/workflow-automation.md",
+      "description": "GitHub Actions workflow automation"
+    },
+    {
+      "name": "repo-architect",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/repo-architect.md",
+      "description": "Repository structure optimization"
+    },
+    {
+      "name": "multi-repo-swarm",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/multi-repo-swarm.md",
+      "description": "Cross-repository swarm orchestration"
+    },
+    {
+      "name": "sync-coordinator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/github/sync-coordinator.md",
+      "description": "Multi-repository synchronization"
+    }
+  ],
+  "commands": [
+    {
+      "name": "github-safe",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/github-safe.js",
+      "description": "Safe GitHub operations wrapper"
+    }
+  ],
+  "helpers": [
+    {
+      "name": "github-setup",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/github-setup.sh",
+      "description": "Setup GitHub integration"
+    }
+  ],
+  "tags": ["github", "automation", "pr", "code-review", "ci-cd", "issues", "releases"],
+  "category": "github",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/github/CLAUDE.md",
+  "screenshots": [],
+  "dependencies": [],
+  "configuration": {
+    "required": {
+      "GITHUB_TOKEN": "GitHub personal access token with repo permissions"
+    },
+    "optional": {
+      "GITHUB_ORG": "GitHub organization name for multi-repo operations",
+      "DEFAULT_BRANCH": "Default branch name (default: main)"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "name": "research-execution-pipeline",
+  "displayName": "Research-Execution Pipeline",
+  "version": "1.0.0",
+  "description": "DSPy-powered research pipeline with automated strategy discovery, backtesting, and continuous optimization. Implements GEPA methodology for systematic strategy improvement.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "proposer-dspy",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/research/proposer-dspy.md",
+      "description": "DSPy-powered strategy proposal generation"
+    },
+    {
+      "name": "strategy-finder",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/research/strategy-finder.md",
+      "description": "Automated strategy discovery and evaluation"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "research-loop",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/research-loop.md",
+      "description": "Daily 06:00 research loop generating new strategy candidates"
+    },
+    {
+      "name": "research-workflow",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/research-workflow.md",
+      "description": "Complete research-execution workflow with GEPA optimization"
+    }
+  ],
+  "commands": [
+    {
+      "name": "journal-append",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/journal.append.md",
+      "description": "Append research findings to journal"
+    }
+  ],
+  "hooks": [
+    {
+      "name": "verify_gate",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/verify_gate.sh",
+      "type": "pre_run",
+      "description": "Verify strategy meets benchmark before promotion"
+    }
+  ],
+  "tags": ["dspy", "research", "optimization", "backtesting", "gepa", "ai"],
+  "category": "research",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/workflows/research-loop.md",
+  "screenshots": [],
+  "dependencies": [],
+  "configuration": {
+    "required": {},
+    "optional": {
+      "RESEARCH_SCHEDULE": "Cron schedule for research loop (default: 0 6 * * *)",
+      "BENCHMARK_THRESHOLD": "Minimum performance to beat current winner"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "swarm-coordination",
+  "displayName": "Swarm Coordination",
+  "version": "1.0.0",
+  "description": "Adaptive, hierarchical, and mesh swarm coordinators for distributed agent systems. Self-organizing patterns with dynamic topology switching.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "adaptive-coordinator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/swarm/adaptive-coordinator.md",
+      "description": "Dynamic topology switching with real-time optimization"
+    },
+    {
+      "name": "hierarchical-coordinator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/swarm/hierarchical-coordinator.md",
+      "description": "Queen-led hierarchical swarm with worker delegation"
+    },
+    {
+      "name": "mesh-coordinator",
+      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/swarm/mesh-coordinator.md",
+      "description": "Peer-to-peer mesh network with distributed decision making"
+    }
+  ],
+  "tags": ["swarm", "distributed", "coordination", "multi-agent", "topology"],
+  "category": "swarm",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/agents/swarm/README.md",
+  "screenshots": [],
+  "dependencies": [],
+  "configuration": {
+    "required": {},
+    "optional": {
+      "DEFAULT_TOPOLOGY": "Default swarm topology (adaptive/hierarchical/mesh)",
+      "MAX_AGENTS": "Maximum number of agents in swarm"
+    }
+  }
+}
