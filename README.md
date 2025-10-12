@@ -220,5 +220,3 @@ Built on:
 ---
 
 **Made with 🧊 by [@jmanhype](https://github.com/jmanhype)**
-
-*Breaking down the brick, cutting it clean, stepping on it right* 💎
