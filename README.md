@@ -4,9 +4,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-blue)](https://docs.claude.com/en/docs/claude-code)
-[![Plugins: 20](https://img.shields.io/badge/Plugins-20-green)](https://github.com/jmanhype/claude-code-plugins)
+[![Plugins: 21](https://img.shields.io/badge/Plugins-21-green)](https://github.com/jmanhype/claude-code-plugins)
 
-Transform Claude Code into a specialized multi-agent system. Install curated plugins for quantitative trading, GitHub automation, distributed coordination, and systematic development workflows.
+Transform Claude Code into a specialized multi-agent system. Install curated plugins for AI safety monitoring, quantitative trading, GitHub automation, distributed coordination, and systematic development workflows.
 
 ## 🚀 Quick Start
 
@@ -23,6 +23,27 @@ Browse and install plugins:
 ```
 
 ## 📦 Featured Plugins
+
+### 🛡️ Code Safety Monitor
+
+**Install:** `/plugin install code-safety-monitor`
+
+DSPy-powered AI safety monitoring system:
+
+- 90% backdoor detection rate with 1% false positives
+- GEPA-optimized prompt engineering (35x more efficient than RL)
+- Real-time scanning and circuit breakers
+- Comparative training on attack vs honest code
+
+**Use Cases:**
+
+- AI control research and production deployments
+- Detecting backdoors in untrusted LLM-generated code
+- Privacy-conscious delegation validation
+- Vulnerability detection in web applications
+- Scalable code auditing (review only ~1% of code)
+
+---
 
 ### 🔧 Modular Agentic Development
 
@@ -130,6 +151,7 @@ Advanced swarm patterns:
 
 | Plugin                          | Category      | Description                                  |
 | ------------------------------- | ------------- | -------------------------------------------- |
+| `code-safety-monitor`         | Safety        | DSPy-powered backdoor detection (90% TPR)    |
 | `modular-agentic-dev`         | Methodology   | Session-based agentic development framework  |
 | `quant-trading-system`        | Trading       | Complete quantitative trading stack          |
 | `research-execution-pipeline` | Research      | DSPy research + GEPA optimization            |
@@ -152,6 +174,14 @@ Advanced swarm patterns:
 | `base-template-generator`     | Templates     | Project scaffolding                          |
 
 ## 🎯 Use Case Guides
+
+### For AI Safety Researchers
+
+```bash
+/plugin install code-safety-monitor
+/plugin install safety-compliance
+/plugin install testing-qa-framework
+```
 
 ### For Quant Traders
 
