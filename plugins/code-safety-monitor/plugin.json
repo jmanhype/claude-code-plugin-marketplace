@@ -9,105 +9,105 @@
   "agents": [
     {
       "name": "backdoor-detector",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/safety/backdoor-detector.md",
+      "source": "./.claude/agents/backdoor-detector.md",
       "description": "DSPy-based monitor that detects backdoors and malicious patterns in code using GEPA-optimized prompts"
     },
     {
       "name": "code-auditor",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/safety/code-auditor.md",
+      "source": "./.claude/agents/code-auditor.md",
       "description": "Human-in-the-loop auditor for reviewing flagged suspicious code and validating monitor decisions"
     },
     {
       "name": "safety-classifier",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/safety/safety-classifier.md",
+      "source": "./.claude/agents/safety-classifier.md",
       "description": "Assigns suspicion scores (0-100) to code, optimized for fine-grained classification to avoid clustering"
     },
     {
       "name": "vulnerability-scanner",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/safety/vulnerability-scanner.md",
+      "source": "./.claude/agents/vulnerability-scanner.md",
       "description": "Scans for common security vulnerabilities, CVEs, and exploit patterns in code"
     },
     {
       "name": "control-protocol-enforcer",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/safety/control-protocol-enforcer.md",
+      "source": "./.claude/agents/control-protocol-enforcer.md",
       "description": "Enforces AI control protocols and delegates to trusted models when suspicion threshold is exceeded"
     },
     {
       "name": "feedback-analyzer",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/agents/safety/feedback-analyzer.md",
+      "source": "./.claude/agents/feedback-analyzer.md",
       "description": "Analyzes monitor feedback and generates natural language explanations for GEPA optimization"
     }
   ],
   "commands": [
     {
       "name": "scan-code",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/safety/scan-code.md",
+      "source": "./.claude/commands/scan-code.md",
       "description": "Scan code for backdoors, malicious behavior, and security vulnerabilities"
     },
     {
       "name": "train-monitor",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/safety/train-monitor.md",
+      "source": "./.claude/commands/train-monitor.md",
       "description": "Train DSPy monitor using comparative pairs (attack vs honest code)"
     },
     {
       "name": "optimize-gepa",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/safety/optimize-gepa.md",
+      "source": "./.claude/commands/optimize-gepa.md",
       "description": "Run GEPA prompt optimization to improve monitor separation of honest vs attack code"
     },
     {
       "name": "finetune-monitor",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/safety/finetune-monitor.md",
+      "source": "./.claude/commands/finetune-monitor.md",
       "description": "Bootstrap finetune the monitor after GEPA optimization for improved performance"
     },
     {
       "name": "audit-flagged",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/safety/audit-flagged.md",
+      "source": "./.claude/commands/audit-flagged.md",
       "description": "Review and audit code flagged as suspicious by the monitor"
     },
     {
       "name": "validate-safety",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/safety/validate-safety.md",
+      "source": "./.claude/commands/validate-safety.md",
       "description": "Validate safety scores and compute true positive/false positive rates"
     },
     {
       "name": "load-control-arena",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/safety/load-control-arena.md",
+      "source": "./.claude/commands/load-control-arena.md",
       "description": "Load datasets from Control Arena (APPS, ControlTax) for training and evaluation"
     },
     {
       "name": "export-monitor",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/commands/safety/export-monitor.md",
+      "source": "./.claude/commands/export-monitor.md",
       "description": "Export optimized monitor as a Claude Skill for reusable workflow integration"
     }
   ],
   "hooks": [
     {
       "name": "pre_commit_safety",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/pre_commit_safety.sh",
+      "source": "./.claude/hooks/pre_commit_safety.sh",
       "type": "pre_run",
       "description": "Automatically scan code for backdoors before commits, block if suspicion exceeds threshold"
     },
     {
       "name": "post_generate_scan",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/post_generate_scan.sh",
+      "source": "./.claude/hooks/post_generate_scan.sh",
       "type": "post_run",
       "description": "Scan AI-generated code immediately after generation and flag suspicious outputs"
     },
     {
       "name": "safety_circuit_breaker",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/safety_circuit_breaker.sh",
+      "source": "./.claude/hooks/safety_circuit_breaker.sh",
       "type": "pre_run",
       "description": "Circuit breaker that halts execution if too many suspicious patterns detected"
     },
     {
       "name": "audit_logger",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/audit_logger.sh",
+      "source": "./.claude/hooks/audit_logger.sh",
       "type": "post_run",
       "description": "Log all safety decisions, suspicion scores, and audit trails for compliance"
     },
     {
       "name": "defer_to_trusted",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/hooks/defer_to_trusted.sh",
+      "source": "./.claude/hooks/defer_to_trusted.sh",
       "type": "pre_run",
       "description": "Defer to trusted model when untrusted output exceeds audit budget threshold"
     }
@@ -115,56 +115,45 @@
   "workflows": [
     {
       "name": "ai-control-monitoring",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/ai-control-monitoring.md",
+      "source": "./.claude/workflows/ai-control-monitoring.md",
       "description": "Complete AI control workflow: scan, classify, defer to trusted, and audit suspicious code"
     },
     {
       "name": "backdoor-detection-pipeline",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/backdoor-detection-pipeline.md",
+      "source": "./.claude/workflows/backdoor-detection-pipeline.md",
       "description": "End-to-end pipeline for detecting backdoors in code using DSPy monitors"
     },
     {
       "name": "safety-training-loop",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/safety-training-loop.md",
+      "source": "./.claude/workflows/safety-training-loop.md",
       "description": "Continuous training and optimization loop for monitors using GEPA and fine-tuning"
     },
     {
       "name": "vulnerability-assessment",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/workflows/vulnerability-assessment.md",
+      "source": "./.claude/workflows/vulnerability-assessment.md",
       "description": "Comprehensive vulnerability assessment workflow for codebases and web applications"
     }
   ],
-  "mcp": [
-    {
-      "name": "control-arena",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/mcp/control-arena-config.json",
-      "description": "Control Arena integration for accessing APPS and ControlTax datasets"
-    },
-    {
-      "name": "dspy",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/mcp/dspy-config.json",
-      "description": "DSPy framework integration for prompt optimization and model compilation"
-    }
-  ],
+  "mcp": [],
   "helpers": [
     {
       "name": "dspy-setup",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/dspy-setup.sh",
+      "source": "./.claude/helpers/dspy-setup.sh",
       "description": "Setup DSPy environment with GEPA optimizer and required dependencies"
     },
     {
       "name": "gepa-trainer",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/gepa-trainer.sh",
+      "source": "./.claude/helpers/gepa-trainer.sh",
       "description": "Helper script for running GEPA optimization with comparative metrics"
     },
     {
       "name": "dataset-loader",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/dataset-loader.sh",
+      "source": "./.claude/helpers/dataset-loader.sh",
       "description": "Load and prepare Control Arena datasets (APPS, ControlTax, AppsBackdoors)"
     },
     {
       "name": "safety-evaluator",
-      "source": "https://raw.githubusercontent.com/jmanhype/multi-agent-system/main/.claude/helpers/safety-evaluator.sh",
+      "source": "./.claude/helpers/safety-evaluator.sh",
       "description": "Evaluate monitor safety scores across various audit budgets"
     }
   ],
@@ -180,12 +169,15 @@
   ],
   "category": "safety",
   "homepage": "https://github.com/jmanhype/multi-agent-system",
-  "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/workflows/ai-control-monitoring.md",
+  "documentation": "./.claude/workflows/ai-control-monitoring.md",
   "screenshots": [],
   "dependencies": [
-    "dspy>=3.0.0",
+    "dspy>=3.0.3",
     "control-arena>=8.0.0",
-    "inspect-ai>=0.3.137"
+    "inspect-ai>=0.3.137",
+    "openai>=1.0.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0"
   ],
   "configuration": {
     "required": {

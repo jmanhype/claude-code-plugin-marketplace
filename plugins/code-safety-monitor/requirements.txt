@@ -1,0 +1,23 @@
+# Core DSPy framework
+dspy>=3.0.3
+
+# Control Arena for datasets and evaluation
+control-arena>=8.0.0
+
+# Inspect AI for advanced evaluation
+inspect-ai>=0.3.137
+
+# OpenAI API
+openai>=1.0.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Visualization (optional, for analysis)
+plotly>=5.0.0
+kaleido>=0.2.1
+
+# Testing
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
