@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude.com/schemas/ace/curator_output.schema.json",
+  "title": "ACE Curator Output Schema",
+  "description": "Strict JSON output from Curator mode",
+  "type": "object",
+  "required": ["clean_delta", "curation_notes"],
+  "properties": {
+    "clean_delta": {
+      "$ref": "delta.schema.json",
+      "description": "Normalized and deduplicated delta ready for merge"
+    },
+    "curation_notes": {
+      "type": "string",
+      "description": "Notes on normalization, deduplication, and conflicts resolved"
+    }
+  },
+  "additionalProperties": false
+}

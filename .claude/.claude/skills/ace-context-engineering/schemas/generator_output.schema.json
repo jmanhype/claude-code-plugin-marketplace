@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude.com/schemas/ace/generator_output.schema.json",
+  "title": "ACE Generator Output Schema",
+  "description": "Strict JSON output from Generator mode",
+  "type": "object",
+  "required": ["final_answer", "answer_confidence", "used_bullet_ids", "bullet_confidence", "observations", "brief_rationale"],
+  "properties": {
+    "final_answer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The solution or deliverable produced"
+    },
+    "answer_confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Overall confidence in the answer (0.0-1.0)"
+    },
+    "used_bullet_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "IDs of bullets that were actually applied"
+    },
+    "bullet_confidence": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "description": "Per-bullet confidence scores (bullet_id -> confidence)"
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "detail"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["validation", "exec_error", "exec_success", "missing_guidance", "unexpected"],
+            "description": "Type of observation"
+          },
+          "detail": {
+            "type": "string",
+            "description": "Detailed observation"
+          }
+        }
+      },
+      "description": "Observations during execution"
+    },
+    "brief_rationale": {
+      "type": "string",
+      "description": "Brief explanation of approach and bullet usage"
+    }
+  },
+  "additionalProperties": false
+}

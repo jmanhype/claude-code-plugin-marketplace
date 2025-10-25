@@ -93,16 +93,33 @@
       "description": "Related bullet IDs or external documentation URLs"
     },
     "confidence": {
-      "type": "string",
-      "enum": ["high", "medium", "low"],
-      "default": "medium",
-      "description": "Confidence level based on evidence strength"
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.5,
+      "description": "Confidence level based on evidence strength (0.0-1.0)"
     },
     "scope": {
-      "type": "string",
-      "enum": ["global", "project", "domain", "temporary"],
-      "default": "global",
-      "description": "Applicability scope of this bullet"
+      "type": "object",
+      "required": ["domain", "inputs", "outputs"],
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Primary domain (e.g., 'youtube', 'finance', 'agents')"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Expected input types (e.g., ['brief', 'assets'])"
+        },
+        "outputs": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Expected output types (e.g., ['image/png', 'xlsx'])"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Applicability scope with domain and I/O specification"
     },
     "prerequisites": {
       "type": "array",
