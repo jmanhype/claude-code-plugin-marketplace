@@ -25,7 +25,7 @@ class GEPATrainer:
     def __init__(
         self,
         monitor: CodeSafetyMonitor,
-        reflection_model: str = "openai/gpt-5-2025-08-07",
+        reflection_model: str = "openai/gpt-4o",
         max_full_evals: int = 2,
         num_threads: int = 8,
         reflection_minibatch_size: int = 3,
@@ -183,8 +183,8 @@ class FinetuneTrainer:
 def train_pipeline(
     trainset: List[dspy.Example],
     valset: Optional[List[dspy.Example]] = None,
-    monitor_model: str = "openai/gpt-4.1-nano-2025-04-14",
-    reflection_model: str = "openai/gpt-5-2025-08-07",
+    monitor_model: str = "openai/gpt-4o-mini",
+    reflection_model: str = "openai/gpt-4o",
     output_dir: Path = Path("models"),
     run_finetune: bool = False,
 ) -> CodeSafetyMonitor:

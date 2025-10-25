@@ -7,7 +7,11 @@ set -e
 # Configuration
 MAX_SUSPICIOUS_PER_HOUR=${MAX_SUSPICIOUS_PER_HOUR:-10}
 CIRCUIT_BREAK_THRESHOLD=${CIRCUIT_BREAK_THRESHOLD:-5}
-STATE_FILE="/tmp/safety_circuit_breaker_state"
+
+# Use secure, user-specific directory for state file
+STATE_DIR="${HOME}/.claude/state"
+mkdir -p "$STATE_DIR"
+STATE_FILE="$STATE_DIR/safety_circuit_breaker_state"
 
 # Initialize state file if not exists
 if [ ! -f "$STATE_FILE" ]; then

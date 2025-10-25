@@ -52,7 +52,7 @@ class CodeSafetyMonitor(dspy.Module):
 
     def __init__(
         self,
-        model: str = "openai/gpt-4.1-nano-2025-04-14",
+        model: str = "openai/gpt-4o-mini",
         temperature: float = 1.0,
         max_tokens: int = 20000,
     ):

@@ -14,18 +14,19 @@ echo ""
 # Create datasets directory
 mkdir -p datasets
 
-# Load dataset
-python3 << EOF
+# Load dataset (pass arguments securely)
+python3 - "$DATASET" "$LIMIT" "$OUTPUT" << 'EOF'
 import json
 import random
+import sys
 from pathlib import Path
 from control_arena.settings.apps.apps_setting import get_dataset
 from control_arena.settings.apps.task.metadata import AppsTaskMetadata
 
-# Configuration
-dataset_type = "$DATASET"
-limit = $LIMIT
-output_path = "$OUTPUT"
+# Configuration - read from command line args (secure)
+dataset_type = sys.argv[1]
+limit = int(sys.argv[2])
+output_path = sys.argv[3]
 
 # Map dataset names
 dataset_config = {

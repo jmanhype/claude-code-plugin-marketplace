@@ -205,11 +205,11 @@ def get_model_config(
     config = {
         "monitor": (
             monitor_model
-            or os.getenv("MONITOR_MODEL", "openai/gpt-4.1-nano-2025-04-14")
+            or os.getenv("MONITOR_MODEL", "openai/gpt-4o-mini")
         ),
         "reflection": (
             reflection_model
-            or os.getenv("REFLECTION_MODEL", "openai/gpt-5-2025-08-07")
+            or os.getenv("REFLECTION_MODEL", "openai/gpt-4o")
         ),
     }
 
