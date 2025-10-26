@@ -1,0 +1,13 @@
+{
+  "name": "ace-context-engineering",
+  "displayName": "ACE Context Engineering",
+  "version": "1.0.0",
+  "description": "Agentic Context Engineering system for evolving context through bullets, deltas, and retrieval. Complete with TF-IDF retrieval, schema validation, and production-ready scripts.",
+  "author": "jmanhype",
+  "license": "CC-BY-4.0",
+  "repository": "https://github.com/jmanhype/claude-code-plugin-marketplace",
+  "keywords": ["context", "ace", "agentic", "retrieval", "memory", "bullets", "deltas", "self-improvement"],
+  "category": "productivity",
+  "homepage": "https://github.com/jmanhype/claude-code-plugin-marketplace",
+  "documentation": "https://github.com/jmanhype/claude-code-plugin-marketplace/blob/main/plugins/ace-context-engineering/README.md"
+}

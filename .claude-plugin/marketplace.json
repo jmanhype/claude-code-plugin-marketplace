@@ -104,6 +104,20 @@
       "name": "base-template-generator",
       "source": "./plugins/base-template-generator",
       "description": "Project scaffolding, boilerplate generation, and foundational template creation"
+    },
+    {
+      "name": "ace-context-engineering",
+      "source": "./plugins/ace-context-engineering",
+      "description": "Agentic Context Engineering: evolve context through bullets, deltas, and TF-IDF retrieval. Complete with schemas, validation, and production scripts.",
+      "version": "1.0.0",
+      "author": {
+        "name": "jmanhype"
+      },
+      "license": "CC-BY-4.0",
+      "keywords": ["context", "ace", "agentic", "retrieval", "memory", "bullets", "deltas", "self-improvement"],
+      "category": "productivity",
+      "homepage": "https://github.com/jmanhype/claude-code-plugin-marketplace",
+      "repository": "https://github.com/jmanhype/claude-code-plugin-marketplace"
     }
   ]
 }
