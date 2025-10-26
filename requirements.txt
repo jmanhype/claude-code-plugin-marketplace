@@ -1,0 +1,17 @@
+# QTS Trading System Dependencies
+# ================================
+
+# Core validation
+jsonschema>=4.20.0
+
+# Optional: LLM providers (uncomment if using)
+# openai>=1.10.0
+# requests>=2.31.0  # For DeepSeek API
+
+# Optional: Live trading (uncomment if using)
+# ccxt>=4.2.0
+
+# Optional: Development tools
+# flake8>=7.0.0
+# pytest>=7.4.0
+# black>=23.12.0

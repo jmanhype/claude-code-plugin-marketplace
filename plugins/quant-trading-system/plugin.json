@@ -89,6 +89,13 @@
   "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/workflows/crypto-trader.md",
   "screenshots": [],
   "dependencies": [],
+  "permissions": {
+    "filesystem": true,
+    "network": true,
+    "exec": false,
+    "env": true,
+    "trading": "paper"
+  },
   "configuration": {
     "required": {
       "EXCHANGE_API_KEY": "API key for crypto exchange",
@@ -97,6 +104,7 @@
     "optional": {
       "PAPER_TRADING": "Set to true for paper trading mode (default: true)",
       "TRADE_INTERVAL": "Trading interval in minutes (default: 5)"
-    }
+    },
+    "riskConfigPath": "config/qts.risk.json"
   }
 }
