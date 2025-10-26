@@ -98,9 +98,10 @@ class VariantStats:
 
         # Sortino (downside deviation)
         downside_returns = [r for r in self.returns if r < 0]
-        if len(downside_returns) > 1:
+        if len(self.returns) > 1 and len(downside_returns) > 0:
             mean_return = sum(self.returns) / len(self.returns)
-            downside_variance = sum(r ** 2 for r in downside_returns) / len(downside_returns)
+            # Downside variance uses total number of returns in denominator
+            downside_variance = sum(r ** 2 for r in downside_returns) / len(self.returns)
             downside_std = math.sqrt(downside_variance) if downside_variance > 0 else 1e-9
             self.sortino = (mean_return / downside_std) * math.sqrt(252) if downside_std > 0 else 0.0
 

@@ -217,7 +217,8 @@ class RiskManager:
             result.adjusted_leverage = max_leverage
 
         # 5. Check gross leverage
-        notional = size * self.state.equity * leverage * price
+        # Note: size is fraction of equity, so notional = size * equity * leverage
+        notional = size * self.state.equity * leverage
         gross_notional = self.state.get_gross_notional() + notional
         gross_leverage = gross_notional / self.state.equity if self.state.equity > 0 else 0.0
 
@@ -235,7 +236,7 @@ class RiskManager:
                 f"Notional {notional:.2f} exceeds max {max_notional:.2f} for {symbol}"
             )
             # Suggest adjusted size
-            result.adjusted_size = max_notional / (self.state.equity * leverage * price)
+            result.adjusted_size = max_notional / (self.state.equity * leverage)
 
         # 7. Check gross notional
         max_gross_notional = self.state.equity * self.config.notional_gross

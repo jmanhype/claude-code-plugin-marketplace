@@ -60,7 +60,7 @@ class Fill:
 @dataclass
 class ExecutionResult:
     """Result of trade execution."""
-    success: bool
+    success: bool = False
     fills: List[Fill] = field(default_factory=list)
     rejected: List[Dict[str, Any]] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)

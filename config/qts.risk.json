@@ -7,7 +7,7 @@
   "leverage_other": 1.2,
   "_leverage_other_comment": "Maximum leverage for all other symbols",
 
-  "leverage_gross": 1.5,
+  "leverage_gross": 1.0,
   "_leverage_gross_comment": "Maximum gross portfolio leverage (all positions combined)",
 
   "notional_per_symbol": 0.25,

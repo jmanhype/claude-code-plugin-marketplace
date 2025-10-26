@@ -9,7 +9,7 @@
   "permissions": {
     "filesystem": true,
     "network": false,
-    "exec": true,
+    "exec": false,
     "env": true,
     "trading": "paper"
   },
