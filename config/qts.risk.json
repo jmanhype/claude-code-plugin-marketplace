@@ -1,0 +1,50 @@
+{
+  "_comment": "QTS Risk Management Configuration - Enforces strict caps, stops, and circuit breakers",
+
+  "leverage_btc_eth": 1.5,
+  "_leverage_btc_eth_comment": "Maximum leverage for BTC and ETH positions",
+
+  "leverage_other": 1.2,
+  "_leverage_other_comment": "Maximum leverage for all other symbols",
+
+  "leverage_gross": 1.0,
+  "_leverage_gross_comment": "Maximum gross portfolio leverage (all positions combined)",
+
+  "notional_per_symbol": 0.25,
+  "_notional_per_symbol_comment": "Maximum position size per symbol as fraction of equity (25%)",
+
+  "notional_gross": 1.0,
+  "_notional_gross_comment": "Maximum total notional exposure as fraction of equity (100%)",
+
+  "min_stop_pct": 0.005,
+  "_min_stop_pct_comment": "Minimum stop-loss: 0.5% (prevents too-tight stops)",
+
+  "max_stop_pct": 0.05,
+  "_max_stop_pct_comment": "Maximum stop-loss: 5% (prevents too-wide stops)",
+
+  "atr_multiplier": 1.5,
+  "_atr_multiplier_comment": "ATR multiplier for dynamic stop calculation (1.5x ATR)",
+
+  "daily_loss_limit": -0.05,
+  "_daily_loss_limit_comment": "Daily loss limit: -5% triggers auto-flatten and cooldown",
+
+  "daily_loss_cooldown_min": 60,
+  "_daily_loss_cooldown_min_comment": "Cooldown period after daily loss limit hit (60 minutes)",
+
+  "max_drawdown": -0.10,
+  "_max_drawdown_comment": "Maximum drawdown from peak equity: -10% halts all trading",
+
+  "max_orders_per_min": 30,
+  "_max_orders_per_min_comment": "Maximum order rate: 30 orders per minute",
+
+  "circuit_breaker_cooldown_min": 60,
+  "_circuit_breaker_cooldown_min_comment": "Circuit breaker cooldown: 60 minutes after trigger",
+
+  "_notes": [
+    "All percentage values are decimal fractions (e.g., 0.05 = 5%)",
+    "Leverage caps apply to individual positions; gross caps apply to portfolio total",
+    "Stop-loss is MANDATORY for all trades; bounds prevent unreasonable stops",
+    "Daily loss limit auto-flattens all positions and enters cooldown",
+    "Max drawdown from peak equity triggers emergency halt until manual review"
+  ]
+}

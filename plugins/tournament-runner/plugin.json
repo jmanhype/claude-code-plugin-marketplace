@@ -1,0 +1,45 @@
+{
+  "name": "tournament-runner",
+  "displayName": "Tournament Runner",
+  "version": "1.0.0",
+  "description": "Paper trading tournament orchestrator for testing multiple strategy variants with objective promotion gates. Runs multi-week tournaments with daily leaderboards and performance metrics.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/claude-code-plugin-marketplace",
+  "permissions": {
+    "filesystem": true,
+    "network": false,
+    "exec": false,
+    "env": true,
+    "trading": "paper"
+  },
+  "workflows": [
+    {
+      "name": "run-tournament",
+      "source": "./run_tournament.sh",
+      "description": "Run multi-variant paper tournament"
+    }
+  ],
+  "commands": [
+    {
+      "name": "check-gate",
+      "source": "./check_promotion_gate.sh",
+      "description": "Check if a variant meets promotion criteria"
+    }
+  ],
+  "tags": ["trading", "testing", "tournament", "paper-trading", "optimization"],
+  "category": "trading",
+  "homepage": "https://github.com/jmanhype/claude-code-plugin-marketplace",
+  "documentation": "https://github.com/jmanhype/claude-code-plugin-marketplace/blob/main/plugins/tournament-runner/README.md",
+  "screenshots": [],
+  "dependencies": ["quant-trading-system"],
+  "configuration": {
+    "required": {},
+    "optional": {
+      "TOURNAMENT_VARIANTS": "Comma-separated list of variant names (default: tp_trail_1.0,tp_trail_1.5)",
+      "TOURNAMENT_DAYS": "Number of days to run tournament (default: 7)",
+      "TOURNAMENT_SYMBOLS": "Trading symbols (default: ETH,SOL,XRP,BTC,DOGE,BNB)"
+    },
+    "riskConfigPath": "config/qts.risk.json"
+  }
+}

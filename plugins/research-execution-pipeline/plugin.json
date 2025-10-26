@@ -51,11 +51,19 @@
   "documentation": "https://github.com/jmanhype/multi-agent-system/blob/main/.claude/workflows/research-loop.md",
   "screenshots": [],
   "dependencies": [],
+  "permissions": {
+    "filesystem": true,
+    "network": false,
+    "exec": false,
+    "env": true,
+    "trading": "none"
+  },
   "configuration": {
     "required": {},
     "optional": {
       "RESEARCH_SCHEDULE": "Cron schedule for research loop (default: 0 6 * * *)",
       "BENCHMARK_THRESHOLD": "Minimum performance to beat current winner"
-    }
+    },
+    "promptPath": "prompts/canonical_intraday_prompt.md"
   }
 }

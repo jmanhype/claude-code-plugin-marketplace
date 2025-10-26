@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Trading Signal Graph (ACE Bullet)",
+  "description": "Schema for ACE bullets capturing state→action→result for trading decisions",
+  "type": "object",
+  "required": ["id", "timestamp", "symbol", "state", "action", "result"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{16}$",
+      "description": "Unique bullet ID (16-char hex hash)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp of decision"
+    },
+    "symbol": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 10,
+      "description": "Trading symbol (e.g., BTC, ETH)"
+    },
+    "state": {
+      "type": "object",
+      "required": ["market_data", "portfolio_state", "regime"],
+      "properties": {
+        "market_data": {
+          "type": "object",
+          "required": ["symbol", "price", "volume", "atr", "ma_20", "timestamp"],
+          "properties": {
+            "symbol": {"type": "string"},
+            "price": {"type": "number", "minimum": 0},
+            "volume": {"type": "number", "minimum": 0},
+            "atr": {"type": "number", "minimum": 0},
+            "ma_20": {"type": "number", "minimum": 0},
+            "timestamp": {"type": "string"}
+          }
+        },
+        "portfolio_state": {
+          "type": "object",
+          "required": ["equity", "daily_pnl", "peak_equity", "current_drawdown"],
+          "properties": {
+            "equity": {"type": "number", "minimum": 0},
+            "daily_pnl": {"type": "number"},
+            "peak_equity": {"type": "number", "minimum": 0},
+            "current_drawdown": {"type": "number"},
+            "gross_leverage": {"type": "number", "minimum": 0},
+            "gross_notional": {"type": "number", "minimum": 0},
+            "positions": {"type": "integer", "minimum": 0}
+          }
+        },
+        "regime": {
+          "type": "object",
+          "required": ["volatility", "trend", "liquidity"],
+          "properties": {
+            "volatility": {"enum": ["low", "medium", "high"]},
+            "trend": {"enum": ["up", "down", "sideways"]},
+            "liquidity": {"enum": ["low", "medium", "high"]}
+          },
+          "description": "Market regime classification"
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["llm_decision", "risk_check"],
+      "properties": {
+        "llm_decision": {
+          "type": "object",
+          "required": ["decision", "actions", "rationale"],
+          "properties": {
+            "decision": {"enum": ["TRADE", "NO_TRADE"]},
+            "actions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["type", "symbol", "size", "entry_price"],
+                "properties": {
+                  "type": {"enum": ["long", "short"]},
+                  "symbol": {"type": "string"},
+                  "size": {"type": "number", "minimum": 0, "maximum": 1},
+                  "entry_price": {"type": "number", "minimum": 0}
+                }
+              }
+            },
+            "leverage": {"type": "number", "minimum": 1.0, "maximum": 2.0},
+            "stop_loss": {"type": "number", "minimum": 0, "maximum": 0.1},
+            "rationale": {"type": "string", "maxLength": 220}
+          }
+        },
+        "risk_check": {
+          "type": "object",
+          "required": ["approved", "violations", "messages"],
+          "properties": {
+            "approved": {"type": "boolean"},
+            "violations": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "per_symbol_leverage_exceeded",
+                  "gross_leverage_exceeded",
+                  "per_symbol_notional_exceeded",
+                  "gross_notional_exceeded",
+                  "missing_stop_loss",
+                  "invalid_stop_loss",
+                  "daily_loss_limit_exceeded",
+                  "max_drawdown_exceeded",
+                  "order_rate_limit_exceeded",
+                  "circuit_breaker_active"
+                ]
+              }
+            },
+            "messages": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "required": ["execution_result", "violations"],
+      "properties": {
+        "execution_result": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "required": ["success", "fills", "rejected", "errors", "total_latency_ms"],
+              "properties": {
+                "success": {"type": "boolean"},
+                "fills": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["symbol", "side", "size", "entry_price", "fill_price", "slippage_bps", "timestamp", "latency_ms"],
+                    "properties": {
+                      "symbol": {"type": "string"},
+                      "side": {"type": "string"},
+                      "size": {"type": "number"},
+                      "entry_price": {"type": "number"},
+                      "fill_price": {"type": "number"},
+                      "slippage_bps": {"type": "number"},
+                      "timestamp": {"type": "string", "format": "date-time"},
+                      "latency_ms": {"type": "number", "minimum": 0}
+                    }
+                  }
+                },
+                "rejected": {"type": "array"},
+                "errors": {"type": "array", "items": {"type": "string"}},
+                "total_latency_ms": {"type": "number", "minimum": 0}
+              }
+            }
+          ]
+        },
+        "pnl": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "number"}
+          ]
+        },
+        "violations": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "target_id"],
+        "properties": {
+          "type": {
+            "enum": ["led_to", "confirmed_by", "invalidated_by", "same_regime_as"]
+          },
+          "target_id": {"type": "string", "pattern": "^[a-f0-9]{16}$"},
+          "weight": {"type": "number", "minimum": 0, "maximum": 1}
+        }
+      },
+      "description": "Graph edges connecting related bullets"
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "description": "Tags for filtering and retrieval"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional human notes"
+    }
+  }
+}
