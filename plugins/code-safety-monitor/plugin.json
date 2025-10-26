@@ -1,0 +1,196 @@
+{
+  "name": "code-safety-monitor",
+  "displayName": "Code Safety Monitor",
+  "version": "1.0.0",
+  "description": "DSPy-powered AI safety monitor for detecting backdoors and malicious behavior in code. Uses GEPA optimization to achieve 90% true positive rate with 1% false positive rate. Ideal for AI control research and production code validation.",
+  "author": "jmanhype",
+  "license": "MIT",
+  "repository": "https://github.com/jmanhype/multi-agent-system",
+  "agents": [
+    {
+      "name": "backdoor-detector",
+      "source": "./.claude/agents/backdoor-detector.md",
+      "description": "DSPy-based monitor that detects backdoors and malicious patterns in code using GEPA-optimized prompts"
+    },
+    {
+      "name": "code-auditor",
+      "source": "./.claude/agents/code-auditor.md",
+      "description": "Human-in-the-loop auditor for reviewing flagged suspicious code and validating monitor decisions"
+    },
+    {
+      "name": "safety-classifier",
+      "source": "./.claude/agents/safety-classifier.md",
+      "description": "Assigns suspicion scores (0-100) to code, optimized for fine-grained classification to avoid clustering"
+    },
+    {
+      "name": "vulnerability-scanner",
+      "source": "./.claude/agents/vulnerability-scanner.md",
+      "description": "Scans for common security vulnerabilities, CVEs, and exploit patterns in code"
+    },
+    {
+      "name": "control-protocol-enforcer",
+      "source": "./.claude/agents/control-protocol-enforcer.md",
+      "description": "Enforces AI control protocols and delegates to trusted models when suspicion threshold is exceeded"
+    },
+    {
+      "name": "feedback-analyzer",
+      "source": "./.claude/agents/feedback-analyzer.md",
+      "description": "Analyzes monitor feedback and generates natural language explanations for GEPA optimization"
+    }
+  ],
+  "commands": [
+    {
+      "name": "scan-code",
+      "source": "./.claude/commands/scan-code.md",
+      "description": "Scan code for backdoors, malicious behavior, and security vulnerabilities"
+    },
+    {
+      "name": "train-monitor",
+      "source": "./.claude/commands/train-monitor.md",
+      "description": "Train DSPy monitor using comparative pairs (attack vs honest code)"
+    },
+    {
+      "name": "optimize-gepa",
+      "source": "./.claude/commands/optimize-gepa.md",
+      "description": "Run GEPA prompt optimization to improve monitor separation of honest vs attack code"
+    },
+    {
+      "name": "finetune-monitor",
+      "source": "./.claude/commands/finetune-monitor.md",
+      "description": "Bootstrap finetune the monitor after GEPA optimization for improved performance"
+    },
+    {
+      "name": "audit-flagged",
+      "source": "./.claude/commands/audit-flagged.md",
+      "description": "Review and audit code flagged as suspicious by the monitor"
+    },
+    {
+      "name": "validate-safety",
+      "source": "./.claude/commands/validate-safety.md",
+      "description": "Validate safety scores and compute true positive/false positive rates"
+    },
+    {
+      "name": "load-control-arena",
+      "source": "./.claude/commands/load-control-arena.md",
+      "description": "Load datasets from Control Arena (APPS, ControlTax) for training and evaluation"
+    },
+    {
+      "name": "export-monitor",
+      "source": "./.claude/commands/export-monitor.md",
+      "description": "Export optimized monitor as a Claude Skill for reusable workflow integration"
+    }
+  ],
+  "hooks": [
+    {
+      "name": "pre_commit_safety",
+      "source": "./.claude/hooks/pre_commit_safety.sh",
+      "type": "pre_run",
+      "description": "Automatically scan code for backdoors before commits, block if suspicion exceeds threshold"
+    },
+    {
+      "name": "post_generate_scan",
+      "source": "./.claude/hooks/post_generate_scan.sh",
+      "type": "post_run",
+      "description": "Scan AI-generated code immediately after generation and flag suspicious outputs"
+    },
+    {
+      "name": "safety_circuit_breaker",
+      "source": "./.claude/hooks/safety_circuit_breaker.sh",
+      "type": "pre_run",
+      "description": "Circuit breaker that halts execution if too many suspicious patterns detected"
+    },
+    {
+      "name": "audit_logger",
+      "source": "./.claude/hooks/audit_logger.sh",
+      "type": "post_run",
+      "description": "Log all safety decisions, suspicion scores, and audit trails for compliance"
+    },
+    {
+      "name": "defer_to_trusted",
+      "source": "./.claude/hooks/defer_to_trusted.sh",
+      "type": "pre_run",
+      "description": "Defer to trusted model when untrusted output exceeds audit budget threshold"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "ai-control-monitoring",
+      "source": "./.claude/workflows/ai-control-monitoring.md",
+      "description": "Complete AI control workflow: scan, classify, defer to trusted, and audit suspicious code"
+    },
+    {
+      "name": "backdoor-detection-pipeline",
+      "source": "./.claude/workflows/backdoor-detection-pipeline.md",
+      "description": "End-to-end pipeline for detecting backdoors in code using DSPy monitors"
+    },
+    {
+      "name": "safety-training-loop",
+      "source": "./.claude/workflows/safety-training-loop.md",
+      "description": "Continuous training and optimization loop for monitors using GEPA and fine-tuning"
+    },
+    {
+      "name": "vulnerability-assessment",
+      "source": "./.claude/workflows/vulnerability-assessment.md",
+      "description": "Comprehensive vulnerability assessment workflow for codebases and web applications"
+    }
+  ],
+  "mcp": [],
+  "helpers": [
+    {
+      "name": "dspy-setup",
+      "source": "./.claude/helpers/dspy-setup.sh",
+      "description": "Setup DSPy environment with GEPA optimizer and required dependencies"
+    },
+    {
+      "name": "gepa-trainer",
+      "source": "./.claude/helpers/gepa-trainer.sh",
+      "description": "Helper script for running GEPA optimization with comparative metrics"
+    },
+    {
+      "name": "dataset-loader",
+      "source": "./.claude/helpers/dataset-loader.sh",
+      "description": "Load and prepare Control Arena datasets (APPS, ControlTax, AppsBackdoors)"
+    },
+    {
+      "name": "safety-evaluator",
+      "source": "./.claude/helpers/safety-evaluator.sh",
+      "description": "Evaluate monitor safety scores across various audit budgets"
+    }
+  ],
+  "tags": [
+    "ai-safety",
+    "ai-control",
+    "backdoor-detection",
+    "security",
+    "dspy",
+    "gepa",
+    "monitoring",
+    "code-analysis"
+  ],
+  "category": "safety",
+  "homepage": "https://github.com/jmanhype/multi-agent-system",
+  "documentation": "./.claude/workflows/ai-control-monitoring.md",
+  "screenshots": [],
+  "dependencies": [
+    "dspy>=3.0.3",
+    "control-arena>=8.0.0",
+    "inspect-ai>=0.3.137",
+    "openai>=1.0.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0"
+  ],
+  "configuration": {
+    "required": {
+      "OPENAI_API_KEY": "OpenAI API key for monitor and reflection models"
+    },
+    "optional": {
+      "MONITOR_MODEL": "Model for trusted monitor (default: openai/gpt-4.1-nano-2025-04-14)",
+      "REFLECTION_MODEL": "Model for GEPA reflection (default: openai/gpt-5-2025-08-07)",
+      "AUDIT_BUDGET": "Percentage of samples to audit (default: 1.0)",
+      "SUSPICION_THRESHOLD": "Threshold for flagging code (default: 50)",
+      "TRAIN_SAMPLES": "Number of training samples for GEPA (default: 200)",
+      "EVAL_SAMPLES": "Number of evaluation samples (default: 160)",
+      "AUTO_DEFER_TRUSTED": "Automatically defer to trusted model on high suspicion (default: true)"
+    }
+  }
+}

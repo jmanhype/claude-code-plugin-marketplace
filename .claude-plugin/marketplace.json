@@ -6,6 +6,11 @@
   },
   "plugins": [
     {
+      "name": "code-safety-monitor",
+      "source": "./plugins/code-safety-monitor",
+      "description": "DSPy-powered AI safety monitor for detecting backdoors and malicious behavior in code with 90% detection rate"
+    },
+    {
       "name": "modular-agentic-dev",
       "source": "./plugins/modular-agentic-dev",
       "description": "Structured framework for session-based, agent-driven development with modular prompts and audit checkpoints"
