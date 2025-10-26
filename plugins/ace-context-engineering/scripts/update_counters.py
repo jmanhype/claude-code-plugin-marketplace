@@ -58,7 +58,10 @@ def main():
         print("Usage: update_counters.py <bullets.json> <generator_output.json> [--ratings ratings.jsonl] [--out out.json]")
         sys.exit(2)
 
-    bullets = load(sys.argv[1])
+    data = load(sys.argv[1])
+    # Handle both direct list and nested structure
+    is_nested = isinstance(data, dict) and "bullets" in data
+    bullets = data["bullets"] if is_nested else data
     gen = load(sys.argv[2])
 
     ratings = None
@@ -74,7 +77,12 @@ def main():
     apply_gen(bullets, gen)
     apply_ratings(bullets, ratings)
 
-    pathlib.Path(out).write_text(json.dumps(bullets, indent=2), encoding="utf-8")
+    # Preserve nested structure if it existed
+    if is_nested:
+        data["bullets"] = bullets
+        pathlib.Path(out).write_text(json.dumps(data, indent=2), encoding="utf-8")
+    else:
+        pathlib.Path(out).write_text(json.dumps(bullets, indent=2), encoding="utf-8")
     print(f"✅ Counters updated → {out}")
 
 if __name__ == "__main__":

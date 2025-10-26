@@ -56,6 +56,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Optional
+import getpass
 
 # Ensure logs directory exists
 Path("logs").mkdir(exist_ok=True)
@@ -70,6 +71,36 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
+# Audit logger - structured logging for critical actions
+audit_logger = logging.getLogger('qts.audit')
+audit_handler = logging.FileHandler('logs/audit.jsonl')
+audit_handler.setFormatter(logging.Formatter('%(message)s'))
+audit_logger.addHandler(audit_handler)
+audit_logger.setLevel(logging.INFO)
+audit_logger.propagate = False  # Don't propagate to root logger
+
+
+def audit_log(action: str, details: Dict[str, Any], outcome: str, severity: str = "INFO"):
+    """
+    Log critical system actions for security and compliance.
+
+    Args:
+        action: Action performed (e.g., "research_generated", "strategy_selected", "trade_executed")
+        details: Action-specific details (strategy_name, symbols, pnl, etc.)
+        outcome: "success", "failure", or "blocked"
+        severity: "INFO", "WARNING", "ERROR", or "CRITICAL"
+    """
+    audit_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "user": getpass.getuser(),
+        "pid": os.getpid(),
+        "action": action,
+        "outcome": outcome,
+        "severity": severity,
+        "details": details
+    }
+    audit_logger.info(json.dumps(audit_entry))
 
 
 class QTSOrchestrator:
@@ -99,7 +130,7 @@ class QTSOrchestrator:
 
         # Paths
         self.prompts_dir = Path("prompts")
-        self.tournament_dir = Path("qts_tournament")
+        self.tournament_dir = Path("logs/tournament")
         self.logs_dir = Path("logs")
 
         # Ensure directories exist
@@ -131,12 +162,32 @@ class QTSOrchestrator:
             logger.info(f"   Prompt: {result['new_prompt_path']}")
             logger.info(f"   Insights: {result['insights'][:150]}...")
 
+            # Audit log
+            audit_log(
+                action="research_generated",
+                details={
+                    "strategy_name": result['new_variant_name'],
+                    "prompt_path": str(result['new_prompt_path']),
+                    "days_lookback": days_lookback
+                },
+                outcome="success"
+            )
+
             return result
 
         except Exception as e:
             logger.error(f"❌ Research loop failed: {e}")
             import traceback
             traceback.print_exc()
+
+            # Audit log failure
+            audit_log(
+                action="research_generated",
+                details={"error": str(e), "days_lookback": days_lookback},
+                outcome="failure",
+                severity="ERROR"
+            )
+
             return {"error": str(e)}
 
     def run_tournament(self, days: int = 3) -> Dict[str, Any]:
@@ -168,14 +219,44 @@ class QTSOrchestrator:
                 logger.info(f"✅ Tournament complete")
                 logger.info(f"   Winner: {latest_result.get('winner', 'UNKNOWN')}")
                 logger.info(f"   PnL: {latest_result.get('pnl', 0):.2f}")
+
+                # Audit log
+                audit_log(
+                    action="tournament_completed",
+                    details={
+                        "winner": latest_result.get('winner', 'UNKNOWN'),
+                        "pnl": latest_result.get('pnl', 0),
+                        "days": days
+                    },
+                    outcome="success"
+                )
+
                 return latest_result
             else:
                 logger.warning("Tournament completed but no results found")
+
+                # Audit log warning
+                audit_log(
+                    action="tournament_completed",
+                    details={"days": days, "warning": "no results found"},
+                    outcome="success",
+                    severity="WARNING"
+                )
+
                 return {}
 
         except subprocess.CalledProcessError as e:
             logger.error(f"❌ Tournament failed: {e}")
             logger.error(e.stderr)
+
+            # Audit log failure
+            audit_log(
+                action="tournament_completed",
+                details={"error": str(e), "stderr": e.stderr[:200] if e.stderr else "", "days": days},
+                outcome="failure",
+                severity="ERROR"
+            )
+
             return {"error": str(e)}
 
     def execute_best_strategy(self, symbols: List[str]) -> Dict[str, Any]:
@@ -226,11 +307,38 @@ class QTSOrchestrator:
             logger.info(result.stdout)
 
             logger.info(f"✅ Execution complete")
+
+            # Audit log
+            audit_log(
+                action="strategy_executed",
+                details={
+                    "strategy": best_variant if tournament_result and 'winner' in tournament_result else "default",
+                    "symbols": symbols,
+                    "llm_provider": self.llm_provider,
+                    "execution_mode": self.execution_mode,
+                    "use_real_data": self.use_real_data
+                },
+                outcome="success"
+            )
+
             return {"success": True, "output": result.stdout}
 
         except subprocess.CalledProcessError as e:
             logger.error(f"❌ Execution failed: {e}")
             logger.error(e.stderr)
+
+            # Audit log failure
+            audit_log(
+                action="strategy_executed",
+                details={
+                    "symbols": symbols,
+                    "error": str(e),
+                    "stderr": e.stderr[:200] if e.stderr else ""
+                },
+                outcome="failure",
+                severity="ERROR"
+            )
+
             return {"error": str(e), "stderr": e.stderr}
 
     def run_autonomous_mode(
@@ -295,17 +403,19 @@ class QTSOrchestrator:
         if not self.tournament_dir.exists():
             return None
 
-        # Find latest results.json
-        result_files = sorted(self.tournament_dir.glob("**/results.json"))
+        # Find all results.json files
+        result_files = list(self.tournament_dir.glob("**/results.json"))
         if not result_files:
             return None
 
-        latest = result_files[-1]
+        # Sort by modification time (most recent first)
+        latest = sorted(result_files, key=lambda p: p.stat().st_mtime, reverse=True)[0]
+
         try:
             with open(latest) as f:
                 return json.load(f)
         except Exception as e:
-            logger.error(f"Failed to load tournament results: {e}")
+            logger.error(f"Failed to load tournament results from {latest}: {e}")
             return None
 
     def _save_workflow_results(self, results: Dict[str, Any]):

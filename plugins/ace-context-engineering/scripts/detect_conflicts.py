@@ -27,7 +27,9 @@ def main():
         print("Usage: detect_conflicts.py <bullets.json> <out_report.json>")
         sys.exit(2)
 
-    bullets = load(sys.argv[1])
+    data = load(sys.argv[1])
+    # Handle both direct list and nested structure
+    bullets = data.get("bullets", data) if isinstance(data, dict) else data
     report = []
 
     print(f"🔍 Checking {len(bullets)} bullets for conflicts...")

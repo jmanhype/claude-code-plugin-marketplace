@@ -52,6 +52,9 @@ def fetch_market_data(symbol: str, use_market_intelligence: bool = False) -> Dic
             mi = get_market_intelligence(exchange="binance", testnet=True)
             data = mi.get_market_data(symbol)
 
+            # Check if we actually got real data or fallback mock
+            is_real_data = not data.get('is_mock', False)
+
             # Convert to format expected by QTS
             return {
                 "symbol": symbol,
@@ -66,7 +69,7 @@ def fetch_market_data(symbol: str, use_market_intelligence: bool = False) -> Dic
                 "spread_pct": data['spread_pct'],
                 "volatility": data['volatility'],
                 "order_book_imbalance": data['order_book_depth']['imbalance'],
-                "market_intelligence_enabled": True
+                "market_intelligence_enabled": is_real_data  # Only True if actually real data
             }
         except Exception as e:
             print(f"Warning: Market Intelligence failed, falling back to mock: {e}")

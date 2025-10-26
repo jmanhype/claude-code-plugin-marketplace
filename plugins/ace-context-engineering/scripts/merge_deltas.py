@@ -101,7 +101,10 @@ def main():
         print("Usage: merge_deltas.py <bullets.json> <delta.json> <out.json>")
         sys.exit(2)
 
-    bullets = load(sys.argv[1])
+    data = load(sys.argv[1])
+    # Handle both direct list and nested structure
+    is_nested = isinstance(data, dict) and "bullets" in data
+    bullets = data["bullets"] if is_nested else data
     delta = load(sys.argv[2])
 
     print(f"📝 Merging delta into {len(bullets)} bullets...")
@@ -113,7 +116,16 @@ def main():
     apply_deprecations(bullets, delta.get("deprecations", []))
     apply_counters(bullets, delta.get("counters", []))
 
-    dump(sys.argv[3], bullets)
+    # Preserve nested structure if it existed
+    if is_nested:
+        data["bullets"] = bullets
+        data["last_updated"] = now()
+        if "metadata" in data:
+            data["metadata"]["total_bullets"] = len(bullets)
+            data["metadata"]["last_curated"] = now()
+        dump(sys.argv[3], data)
+    else:
+        dump(sys.argv[3], bullets)
     print(f"✅ Merged → {sys.argv[3]} ({len(bullets)} total bullets)")
 
 if __name__ == "__main__":

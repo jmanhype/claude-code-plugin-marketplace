@@ -1,0 +1,218 @@
+[
+  {
+    "a_id": "bullet-2025-10-25-001",
+    "b_id": "bullet-2025-10-25-007",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "The Edit tool requires that you read a file using the Read tool at least once in the conversation before attempting to edit it. This is a hard requirement that will cause the Edit ...",
+    "b_excerpt": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces lat...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-001",
+    "b_id": "bullet-2025-10-25-011",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "The Edit tool requires that you read a file using the Read tool at least once in the conversation before attempting to edit it. This is a hard requirement that will cause the Edit ...",
+    "b_excerpt": "NEVER create git commits unless the user explicitly requests it. This is a critical safety rule. Users feel violated when you proactively commit without asking. When the user does ...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-001",
+    "b_id": "bullet-2025-10-25-012",
+    "shared_tags": [
+      "critical",
+      "tool.edit",
+      "tool.read"
+    ],
+    "a_excerpt": "The Edit tool requires that you read a file using the Read tool at least once in the conversation before attempting to edit it. This is a hard requirement that will cause the Edit ...",
+    "b_excerpt": "When using Edit tool with content from Read output, preserve exact indentation as it appears AFTER the line number prefix. The Read output format is: spaces + line number + tab + a...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-002",
+    "b_id": "bullet-2025-10-25-007",
+    "shared_tags": [
+      "best_practice"
+    ],
+    "a_excerpt": "For file operations, always prefer specialized tools: Read (not cat/head/tail), Edit (not sed/awk), Write (not echo >/heredoc), Glob (not find/ls), Grep (not grep/rg). Bash tools s...",
+    "b_excerpt": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces lat...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-002",
+    "b_id": "bullet-2025-10-25-011",
+    "shared_tags": [
+      "tool.bash"
+    ],
+    "a_excerpt": "For file operations, always prefer specialized tools: Read (not cat/head/tail), Edit (not sed/awk), Write (not echo >/heredoc), Glob (not find/ls), Grep (not grep/rg). Bash tools s...",
+    "b_excerpt": "NEVER create git commits unless the user explicitly requests it. This is a critical safety rule. Users feel violated when you proactively commit without asking. When the user does ...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-002",
+    "b_id": "bullet-2025-10-25-012",
+    "shared_tags": [
+      "tool.edit",
+      "tool.read"
+    ],
+    "a_excerpt": "For file operations, always prefer specialized tools: Read (not cat/head/tail), Edit (not sed/awk), Write (not echo >/heredoc), Glob (not find/ls), Grep (not grep/rg). Bash tools s...",
+    "b_excerpt": "When using Edit tool with content from Read output, preserve exact indentation as it appears AFTER the line number prefix. The Read output format is: spaces + line number + tab + a...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-003",
+    "b_id": "bullet-2025-10-25-007",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "When pushing to remote repositories in this environment, branch names MUST start with 'claude/' and end with the session ID, otherwise the push will fail with HTTP 403. Always veri...",
+    "b_excerpt": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces lat...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-003",
+    "b_id": "bullet-2025-10-25-011",
+    "shared_tags": [
+      "critical",
+      "tool.bash"
+    ],
+    "a_excerpt": "When pushing to remote repositories in this environment, branch names MUST start with 'claude/' and end with the session ID, otherwise the push will fail with HTTP 403. Always veri...",
+    "b_excerpt": "NEVER create git commits unless the user explicitly requests it. This is a critical safety rule. Users feel violated when you proactively commit without asking. When the user does ...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-003",
+    "b_id": "bullet-2025-10-25-012",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "When pushing to remote repositories in this environment, branch names MUST start with 'claude/' and end with the session ID, otherwise the push will fail with HTTP 403. Always veri...",
+    "b_excerpt": "When using Edit tool with content from Read output, preserve exact indentation as it appears AFTER the line number prefix. The Read output format is: spaces + line number + tab + a...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-004",
+    "b_id": "bullet-2025-10-25-007",
+    "shared_tags": [
+      "best_practice"
+    ],
+    "a_excerpt": "When exploring a codebase to understand how features work or answer 'how does X work' questions, use the Task tool with subagent_type='Explore' instead of running Glob/Grep directl...",
+    "b_excerpt": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces lat...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-005",
+    "b_id": "bullet-2025-10-25-007",
+    "shared_tags": [
+      "best_practice",
+      "critical"
+    ],
+    "a_excerpt": "When using TodoWrite for task management, maintain exactly ONE task with status 'in_progress' at any given time. Mark tasks as 'in_progress' BEFORE starting work, and mark 'complet...",
+    "b_excerpt": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces lat...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-005",
+    "b_id": "bullet-2025-10-25-011",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "When using TodoWrite for task management, maintain exactly ONE task with status 'in_progress' at any given time. Mark tasks as 'in_progress' BEFORE starting work, and mark 'complet...",
+    "b_excerpt": "NEVER create git commits unless the user explicitly requests it. This is a critical safety rule. Users feel violated when you proactively commit without asking. When the user does ...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-005",
+    "b_id": "bullet-2025-10-25-012",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "When using TodoWrite for task management, maintain exactly ONE task with status 'in_progress' at any given time. Mark tasks as 'in_progress' BEFORE starting work, and mark 'complet...",
+    "b_excerpt": "When using Edit tool with content from Read output, preserve exact indentation as it appears AFTER the line number prefix. The Read output format is: spaces + line number + tab + a...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-006",
+    "b_id": "bullet-2025-10-25-007",
+    "shared_tags": [
+      "best_practice"
+    ],
+    "a_excerpt": "For plugin marketplace projects, always validate JSON files (metadata.json, marketplace.json) before committing. Use validation scripts if available. Common issues: missing require...",
+    "b_excerpt": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces lat...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-007",
+    "b_id": "bullet-2025-10-25-008",
+    "shared_tags": [
+      "best_practice"
+    ],
+    "a_excerpt": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces lat...",
+    "b_excerpt": "Follow progressive disclosure when loading context: (1) Start with .claude/context/context.md for system overview, (2) Read the three mandatory files (memory/CLAUDE.md, projects/CL...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-007",
+    "b_id": "bullet-2025-10-25-009",
+    "shared_tags": [
+      "best_practice",
+      "critical"
+    ],
+    "a_excerpt": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces lat...",
+    "b_excerpt": "When updating ACE context (bullets, playbooks, context files), always propose incremental delta updates rather than monolithic rewrites. Deltas should specify: new_bullets (additio...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-007",
+    "b_id": "bullet-2025-10-25-011",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces lat...",
+    "b_excerpt": "NEVER create git commits unless the user explicitly requests it. This is a critical safety rule. Users feel violated when you proactively commit without asking. When the user does ...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-009",
+    "b_id": "bullet-2025-10-25-011",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "When updating ACE context (bullets, playbooks, context files), always propose incremental delta updates rather than monolithic rewrites. Deltas should specify: new_bullets (additio...",
+    "b_excerpt": "NEVER create git commits unless the user explicitly requests it. This is a critical safety rule. Users feel violated when you proactively commit without asking. When the user does ...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-009",
+    "b_id": "bullet-2025-10-25-012",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "When updating ACE context (bullets, playbooks, context files), always propose incremental delta updates rather than monolithic rewrites. Deltas should specify: new_bullets (additio...",
+    "b_excerpt": "When using Edit tool with content from Read output, preserve exact indentation as it appears AFTER the line number prefix. The Read output format is: spaces + line number + tab + a...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-010",
+    "b_id": "bullet-2025-10-25-012",
+    "shared_tags": [
+      "edge_case"
+    ],
+    "a_excerpt": "When searching for code with literal braces (e.g., Go's 'interface{}', Rust's 'struct {}'), you must escape the braces in Grep patterns because it uses ripgrep (not grep) syntax. U...",
+    "b_excerpt": "When using Edit tool with content from Read output, preserve exact indentation as it appears AFTER the line number prefix. The Read output format is: spaces + line number + tab + a...",
+    "note": "Potential contradiction by polarity keywords"
+  },
+  {
+    "a_id": "bullet-2025-10-25-011",
+    "b_id": "bullet-2025-10-25-012",
+    "shared_tags": [
+      "critical"
+    ],
+    "a_excerpt": "NEVER create git commits unless the user explicitly requests it. This is a critical safety rule. Users feel violated when you proactively commit without asking. When the user does ...",
+    "b_excerpt": "When using Edit tool with content from Read output, preserve exact indentation as it appears AFTER the line number prefix. The Read output format is: spaces + line number + tab + a...",
+    "note": "Potential contradiction by polarity keywords"
+  }
+]

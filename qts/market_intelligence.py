@@ -98,20 +98,26 @@ class MarketIntelligence:
             # Fetch recent OHLCV for volatility
             ohlcv = self.exchange.fetch_ohlcv(ccxt_symbol, '1h', limit=24)
 
+            # Validate and sanitize ticker data
+            validated_ticker = self._validate_ticker(ticker, symbol)
+            if not validated_ticker:
+                logger.warning(f"Invalid ticker data for {symbol}, using fallback")
+                return self._get_fallback_data(symbol)
+
             # Calculate metrics
             volatility = self._calculate_volatility(ohlcv)
             depth_analysis = self._analyze_order_book_depth(order_book)
 
             return {
                 'symbol': symbol,
-                'current_price': ticker['last'],
-                'bid': ticker['bid'],
-                'ask': ticker['ask'],
-                'spread_pct': ((ticker['ask'] - ticker['bid']) / ticker['last']) * 100,
-                'volume_24h': ticker['quoteVolume'],
-                'price_change_pct': ticker['percentage'],
-                'high_24h': ticker['high'],
-                'low_24h': ticker['low'],
+                'current_price': validated_ticker['last'],
+                'bid': validated_ticker['bid'],
+                'ask': validated_ticker['ask'],
+                'spread_pct': ((validated_ticker['ask'] - validated_ticker['bid']) / validated_ticker['last']) * 100,
+                'volume_24h': validated_ticker['quoteVolume'],
+                'price_change_pct': validated_ticker['percentage'],
+                'high_24h': validated_ticker['high'],
+                'low_24h': validated_ticker['low'],
                 'volatility': volatility,
                 'order_book_depth': depth_analysis,
                 'timestamp': datetime.now().isoformat(),
@@ -121,6 +127,52 @@ class MarketIntelligence:
         except Exception as e:
             logger.error(f"Error fetching market data for {symbol}: {e}")
             return self._get_fallback_data(symbol)
+
+    def _validate_ticker(self, ticker: Dict, symbol: str) -> Optional[Dict]:
+        """
+        Validate and sanitize ticker data from exchange.
+
+        Returns None if data is invalid, otherwise returns sanitized ticker.
+        """
+        required_fields = ['last', 'bid', 'ask', 'quoteVolume', 'percentage', 'high', 'low']
+
+        # Check all required fields exist and are valid numbers
+        for field in required_fields:
+            if field not in ticker:
+                logger.warning(f"Missing field '{field}' in ticker for {symbol}")
+                return None
+
+            value = ticker[field]
+
+            # Check for None or NaN
+            if value is None:
+                logger.warning(f"Field '{field}' is None in ticker for {symbol}")
+                return None
+
+            # Convert to float and check for NaN
+            try:
+                float_value = float(value)
+                if float_value != float_value:  # NaN check
+                    logger.warning(f"Field '{field}' is NaN in ticker for {symbol}")
+                    return None
+                if float_value < 0:  # Negative prices are invalid
+                    logger.warning(f"Field '{field}' is negative ({float_value}) in ticker for {symbol}")
+                    return None
+            except (TypeError, ValueError):
+                logger.warning(f"Field '{field}' cannot be converted to float in ticker for {symbol}")
+                return None
+
+        # Additional validation: bid should be <= ask
+        if ticker['bid'] > ticker['ask']:
+            logger.warning(f"Invalid bid/ask spread for {symbol}: bid={ticker['bid']} > ask={ticker['ask']}")
+            return None
+
+        # Additional validation: last should be between bid and ask (usually)
+        if not (ticker['bid'] * 0.9 <= ticker['last'] <= ticker['ask'] * 1.1):
+            logger.warning(f"Suspicious last price for {symbol}: last={ticker['last']}, bid={ticker['bid']}, ask={ticker['ask']}")
+            # Don't fail here, just log warning
+
+        return ticker
 
     def _format_symbol(self, symbol: str) -> str:
         """Convert symbol to CCXT format (e.g., BTC → BTC/USDT)."""
@@ -213,13 +265,21 @@ Market Data for {market_data['symbol']} ({market_data['exchange']}):
 """.strip()
 
 
-# Global instance (lazy initialized)
-_market_intelligence: Optional[MarketIntelligence] = None
+# Global instance cache (per exchange-testnet configuration)
+_market_intelligence_cache: Dict[str, MarketIntelligence] = {}
 
 
 def get_market_intelligence(exchange: str = "binance", testnet: bool = True) -> MarketIntelligence:
-    """Get or create global MarketIntelligence instance."""
-    global _market_intelligence
-    if _market_intelligence is None:
-        _market_intelligence = MarketIntelligence(exchange, testnet)
-    return _market_intelligence
+    """
+    Get or create MarketIntelligence instance for specific configuration.
+
+    Caches instances per exchange-testnet combination to avoid recreating
+    connections while supporting multiple configurations.
+    """
+    global _market_intelligence_cache
+    cache_key = f"{exchange}_{testnet}"
+
+    if cache_key not in _market_intelligence_cache:
+        _market_intelligence_cache[cache_key] = MarketIntelligence(exchange, testnet)
+
+    return _market_intelligence_cache[cache_key]
