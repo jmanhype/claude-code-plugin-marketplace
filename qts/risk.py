@@ -70,7 +70,9 @@ class RiskConfig:
         """Load config from JSON file."""
         with open(path) as f:
             data = json.load(f)
-        return cls(**data)
+        # Filter out comment fields (those starting with underscore)
+        filtered_data = {k: v for k, v in data.items() if not k.startswith('_')}
+        return cls(**filtered_data)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
