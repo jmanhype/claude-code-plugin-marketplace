@@ -8,7 +8,7 @@
   "_leverage_other_comment": "Maximum leverage for all other symbols",
 
   "leverage_gross": 1.0,
-  "_leverage_gross_comment": "Maximum gross portfolio leverage (all positions combined)",
+  "_leverage_gross_comment": "Maximum gross portfolio leverage (all positions combined). Set to 1.0 to align with notional_gross limit of 100% equity. Individual positions can still use higher leverage (1.5x/1.2x) but total portfolio exposure is capped at equity.",
 
   "notional_per_symbol": 0.25,
   "_notional_per_symbol_comment": "Maximum position size per symbol as fraction of equity (25%)",

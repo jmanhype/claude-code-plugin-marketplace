@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-blue)](https://docs.claude.com/en/docs/claude-code)
-[![Plugins: 21](https://img.shields.io/badge/Plugins-21-green)](https://github.com/jmanhype/claude-code-plugins)
+[![Plugins: 22](https://img.shields.io/badge/Plugins-22-green)](https://github.com/jmanhype/claude-code-plugins)
 
 Transform Claude Code into a specialized multi-agent system. Install curated plugins for AI safety monitoring, quantitative trading, GitHub automation, distributed coordination, and systematic development workflows.
 
@@ -65,24 +65,64 @@ Session-based agentic development framework:
 
 ---
 
-### 🎯 Quantitative Trading System
+### 🎯 Quantitative Trading System (QTS)
+
+**NEW:** Complete LLM-powered intraday trading pipeline with safety-first design!
 
 **Install:** `/plugin install quant-trading-system`
 
-Complete trading stack with:
+**Core Features:**
 
-- Risk management & position sizing
-- Circuit breakers & kill switches
-- Pre/post trade hooks
-- Real-time safety guards
-- CCXT exchange integration
+- **LLM Trading Decisions**: Mock, OpenAI, or DeepSeek with JSON output
+- **Multi-layer Risk Management**: Leverage caps, mandatory stops, circuit breakers
+- **ACE Bullet Logging**: State→action→result for every decision
+- **Paper Trading Default**: Live requires explicit approval + 4-week gate
+- **Tournament System**: Multi-variant testing with objective promotion criteria
+
+**Quick Start:**
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run single-tick paper trading (dry-run)
+PYTHONPATH=. python -m qts.main --symbols ETH SOL --llm-provider mock --dry-run
+
+# Run 7-day tournament
+PYTHONPATH=. python -m qts.tournament --variants tp_trail_1.0 tp_trail_1.5 --days 7
+
+# Check promotion gate (4-week criteria)
+PYTHONPATH=. python -m qts.tournament --check-gate tp_trail_1.5 --gate-weeks 4
+```
+
+**Risk Management:**
+- Leverage: 1.5x BTC/ETH, 1.2x others, 1.0x gross
+- Notional: 25% per symbol, 100% gross
+- Mandatory stop-loss (0.5-5%, ATR×1.5)
+- Daily loss limit: -5% → auto-flatten + cooldown
+- Max drawdown: -10% → halt
+
+**Promotion Gate Criteria** (4 consecutive weeks):
+- Sharpe Ratio > 1.2
+- Max Drawdown < 10%
+- Hit Rate > 45%
+- Trades/Week > 20
+- Violations = 0
 
 **Use Cases:**
 
-- Automated crypto trading
-- Risk-controlled execution
-- Paper & live trading modes
-- 5-minute trading loops
+- Systematic crypto trading with LLM signals
+- Risk-controlled execution with multiple safety layers
+- Paper tournament for strategy validation
+- Guarded live trading after promotion gate
+
+**Security:**
+- Paper trading default
+- Live requires approval + gate pass
+- Permissions model enforced
+- All decisions logged as ACE bullets
+
+📖 See [CHANGELOG.md](CHANGELOG.md) for detailed implementation notes and [SECURITY.md](SECURITY.md) for threat model.
 
 ---
 

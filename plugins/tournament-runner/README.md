@@ -55,6 +55,18 @@ Variants use the same `canonical_intraday_prompt.md` but differ in exit paramete
 
 Higher TP multipliers = fewer wins but larger wins (risk/reward tradeoff).
 
+## Reproducibility
+
+Each variant uses a **deterministic, seeded random number generator** based on its name hash. This ensures:
+
+- **Fair comparisons**: All variants face identical market conditions
+- **Reproducible results**: Running the same tournament multiple times produces identical results
+- **Isolation**: Performance differences reflect strategy parameters, not random luck
+
+The seed is computed as: `hash(variant.name) % (2^32)`
+
+Example: `tp_trail_1.5` always produces the same equity curve, trades, and metrics.
+
 ## Output
 
 Results are saved to `logs/tournament/tournament_<timestamp>.json`:
@@ -90,7 +102,7 @@ The tournament runner uses the core QTS modules:
 
 - **filesystem**: true (read/write tournament results)
 - **network**: false (no external calls)
-- **exec**: true (runs Python subprocesses)
+- **exec**: false (security: no shell execution)
 - **env**: true (reads tournament config from env)
 - **trading**: paper (paper trading only)
 
