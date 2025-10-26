@@ -57,7 +57,9 @@ def main():
         print("Usage: retrieve_bullets.py <bullets.json> <query> [--tags t1,t2] [--topk 10]")
         sys.exit(2)
 
-    bullets = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+    data = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+    # Handle both direct list and nested structure
+    bullets = data.get("bullets", data) if isinstance(data, dict) else data
     query = sys.argv[2]
 
     # Parse optional arguments

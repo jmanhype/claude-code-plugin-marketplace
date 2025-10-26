@@ -1,0 +1,106 @@
+{
+  "delta_id": "delta-2025-10-26-003",
+  "timestamp": "2025-10-26T14:30:00Z",
+  "author": "agent",
+  "rationale": "Completed full ACE system implementation using Reflexion pattern. Built Generator, Reflector, Curator agents, grow-and-refine, multi-epoch training, and execution feedback integration. All tests passing. Key learnings about self-critique, incremental implementation, and validating each component before proceeding.",
+  "task_context": "Implement complete ACE system based on research paper",
+  "reviewed": false,
+  "new_bullets": [
+    {
+      "id": "bullet-2025-10-26-003",
+      "title": "Use Reflexion pattern for complex implementation tasks: generate, critique, refine, test, iterate",
+      "content": "When implementing complex systems with multiple interdependent components, use the Reflexion (self-critique) pattern: 1) Generate initial solution, 2) Self-critique for flaws (wrong function signatures, edge cases, error handling), 3) Refine based on feedback, 4) Test to verify correctness, 5) Iterate until optimal. This prevents cascading errors and ensures each component is solid before building on it. Applied successfully to implement 6 ACE modules (Generator, Reflector, Curator, Refiner, Trainer, Feedback).",
+      "tags": ["best_practice", "implementation", "reflexion", "testing", "quality"],
+      "evidence": [
+        {
+          "type": "execution",
+          "ref": "ace-implementation-2025-10-26",
+          "note": "Reflexion pattern caught critical bugs: Generator function signature mismatch, Reflector bullet ID conflicts, Curator validation gaps. Each fix prevented downstream failures."
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-26T14:30:00Z",
+      "created": "2025-10-26T14:30:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-26-004",
+      "title": "Test each component immediately after implementation, don't batch testing",
+      "content": "When building multi-component systems, test each component immediately after implementing it (Generator → test → Reflector → test → ...). Don't implement all components first then test. Benefits: 1) Catch bugs early when context is fresh, 2) Prevent cascading failures, 3) Build confidence incrementally, 4) Easier debugging with isolated scope. All 6 ACE modules tested individually before integration, preventing downstream issues.",
+      "tags": ["testing", "best_practice", "debugging", "incremental"],
+      "evidence": [
+        {
+          "type": "execution",
+          "ref": "ace-implementation-2025-10-26",
+          "note": "Tested Generator before Reflector - caught ScoredBullet return type issue that would have broken Reflector. Testing sequence: Generator → Reflector → Curator → Refiner → Trainer → Feedback. Each passed before next."
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-26T14:30:00Z",
+      "created": "2025-10-26T14:30:00Z",
+      "links": ["bullet-2025-10-26-003"],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-26-005",
+      "title": "For research paper implementations, validate against ablation studies to confirm design choices",
+      "content": "When implementing systems from research papers, create ablation studies to validate that your implementation matches paper findings. This confirms correctness and reveals insights. For ACE: ablation showed tags contribute 14% F1 (matches paper's emphasis on tags), TF-IDF actually hurts in small corpora (-12.2% F1), feedback needs more data. If ablation results contradict paper, investigate implementation bugs or corpus differences.",
+      "tags": ["validation", "research", "ablation", "testing", "best_practice"],
+      "evidence": [
+        {
+          "type": "execution",
+          "ref": "ace-ablation-2025-10-26",
+          "note": "Ablation study validated tag importance (14% F1 drop), revealed TF-IDF counterproductive for small corpora, confirmed feedback needs larger dataset. Results: Full ACE F1=0.713, No Tags F1=0.613 (-14%), No TF-IDF F1=0.800 (+12.2%)."
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-26T14:30:00Z",
+      "created": "2025-10-26T14:30:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-26-006",
+      "title": "Multi-epoch training demonstrates progressive improvement through repeated exposure",
+      "content": "Multi-epoch training (revisiting same queries multiple times) enables progressive context strengthening. Measured improvements: Epoch 1 → 2: success rate 80% → 100% (+20%), avg retrieval 4.40 → 5.03 (+14%). Mechanism: learnings from epoch 1 become new bullets that improve epoch 2 retrieval. Paper showed +2.6% on Formula benchmark with 2 epochs. Use for offline training when you have fixed query set. Combine with periodic refinement to prevent playbook bloat.",
+      "tags": ["training", "multi-epoch", "self-improvement", "performance"],
+      "evidence": [
+        {
+          "type": "execution",
+          "ref": "ace-training-2025-10-26",
+          "note": "2-epoch training on 5 queries: E1 4/5 success (80%), E2 5/5 success (100%). Retrieval improved 4.40 → 5.03. Playbook grew 14 → 20 bullets, refinement removed 3 duplicates."
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-26T14:30:00Z",
+      "created": "2025-10-26T14:30:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    }
+  ],
+  "edits": [],
+  "merges": [],
+  "deprecations": [],
+  "counters": []
+}

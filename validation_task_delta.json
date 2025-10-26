@@ -1,0 +1,56 @@
+{
+  "delta_id": "delta-2025-10-26-002",
+  "timestamp": "2025-10-26T01:00:00Z",
+  "author": "agent",
+  "rationale": "Created marketplace.json validation script guided by ACE retrieval. Initial validator used assumed schema (displayName, version, author) but actual marketplace uses minimal schema (name, source, description). Learned to inspect actual data structure before writing validation logic.",
+  "task_context": "Real ACE-guided development task: Create marketplace.json validator",
+  "reviewed": false,
+  "new_bullets": [
+    {
+      "id": "bullet-2025-10-26-002",
+      "title": "Inspect actual data structure before writing validation or processing logic",
+      "content": "Before writing validation, parsing, or data processing code, always inspect the actual data structure first. Don't assume schemas based on documentation or expectations - read sample files to understand the real format. Common mistake: writing validators for assumed fields that don't exist in production data. Use Read tool to check real examples before coding.",
+      "tags": ["validation", "data_processing", "best_practice", "schema", "antipattern"],
+      "evidence": [
+        {
+          "type": "execution",
+          "ref": "marketplace-validator-2025-10-26",
+          "note": "Initial validator failed with 64 errors because it assumed displayName/version/author fields that most plugins don't have. Actual schema is just name/source/description."
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-26T01:00:00Z",
+      "created": "2025-10-26T01:00:00Z",
+      "links": ["bullet-2025-10-26-001"],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    }
+  ],
+  "edits": [],
+  "merges": [],
+  "deprecations": [],
+  "counters": [
+    {
+      "id": "bullet-2025-10-25-006",
+      "helpful_delta": 2,
+      "evidence": {
+        "type": "execution",
+        "ref": "marketplace-validator-task",
+        "note": "Top retrieval result (score 4.49) guided creation of validation script"
+      }
+    },
+    {
+      "id": "bullet-2025-10-26-001",
+      "helpful_delta": 1,
+      "evidence": {
+        "type": "execution",
+        "ref": "marketplace-validator-task",
+        "note": "Guided robust JSON loading in validator (2nd highest retrieval)"
+      }
+    }
+  ]
+}

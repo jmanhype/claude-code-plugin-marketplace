@@ -1,0 +1,54 @@
+{
+  "task_id": "demo-task-001",
+  "curator_reasoning": "Reflector proposed 1 new bullet about JSON schema handling. Checked against existing 12 bullets - no duplicates found. Bullet ID format is valid, tags are appropriate, confidence level justified by execution evidence. Counter update for bullet-2025-10-25-002 is appropriate.",
+  "normalized_delta": {
+    "delta_id": "delta-2025-10-26-001",
+    "timestamp": "2025-10-26T00:00:00Z",
+    "author": "agent",
+    "rationale": "Scripts failed when playbook.json used nested structure {bullets: [...], metadata: {...}} instead of flat list. Fixed all 4 core scripts to handle both formats and preserve structure on write.",
+    "task_context": "Running ACE system on claude-code-plugin-marketplace - scripts crashed on playbook.json structure mismatch",
+    "reviewed": false,
+    "new_bullets": [
+      {
+        "id": "bullet-2025-10-26-001",
+        "title": "Handle both flat and nested JSON structures in data processing scripts",
+        "content": "When writing Python scripts that load JSON data, always check if the data is nested (dict with specific keys like 'bullets', 'data') or flat (direct list/object). Use pattern: `data = load(path); items = data.get('key', data) if isinstance(data, dict) else data`. This makes scripts robust to schema evolution and different data formats. When writing back, preserve the original structure to avoid breaking consumers.",
+        "tags": ["python", "json", "data_processing", "best_practice", "robustness"],
+        "evidence": [
+          {
+            "type": "execution",
+            "ref": "ace-script-fixes-2025-10-26",
+            "note": "Fixed retrieve_bullets.py, detect_conflicts.py, merge_deltas.py, and update_counters.py to handle playbook.json nested structure {bullets: [...], metadata: {...}} vs flat list"
+          }
+        ],
+        "helpful_count": 0,
+        "harmful_count": 0,
+        "last_updated": "2025-10-26T00:00:00Z",
+        "created": "2025-10-26T00:00:00Z",
+        "links": [],
+        "confidence": "high",
+        "scope": "global",
+        "prerequisites": [],
+        "author": "agent",
+        "status": "active"
+      }
+    ],
+    "edits": [],
+    "merges": [],
+    "deprecations": [],
+    "counters": [
+      {
+        "id": "bullet-2025-10-25-002",
+        "helpful_delta": 1,
+        "harmful_delta": 0,
+        "evidence": {
+          "type": "execution",
+          "ref": "demo-task-001",
+          "note": "Used to guide script review approach"
+        }
+      }
+    ]
+  },
+  "conflicts_detected": [],
+  "deduplication_notes": "No duplicates found - this is a new pattern not covered by existing bullets"
+}

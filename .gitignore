@@ -28,3 +28,4 @@ dist/
 build/
 *.pyc
 __pycache__/
+.pr_body.md

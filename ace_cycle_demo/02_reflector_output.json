@@ -1,0 +1,26 @@
+{
+  "task_id": "demo-task-001",
+  "analysis": "The task revealed a gap in our playbook: no guidance on writing robust data loading code that handles schema evolution. The pattern `data.get('key', data) if isinstance(data, dict) else data` proved valuable and should be captured.",
+  "proposed_deltas": {
+    "new_bullets": [
+      {
+        "id": "bullet-2025-10-26-001",
+        "title": "Handle both flat and nested JSON structures in data processing scripts",
+        "content": "When writing Python scripts that load JSON data, always check if the data is nested (dict with specific keys like 'bullets', 'data') or flat (direct list/object). Use pattern: `data = load(path); items = data.get('key', data) if isinstance(data, dict) else data`. This makes scripts robust to schema evolution and different data formats. When writing back, preserve the original structure to avoid breaking consumers.",
+        "tags": ["python", "json", "data_processing", "best_practice", "robustness"],
+        "confidence": "high",
+        "evidence_type": "execution",
+        "evidence_ref": "ace-script-fixes-2025-10-26"
+      }
+    ],
+    "counters": [
+      {
+        "id": "bullet-2025-10-25-002",
+        "helpful_delta": 1,
+        "evidence": "Used to guide script review approach"
+      }
+    ]
+  },
+  "confidence": "high",
+  "next_steps": "Curator should validate this delta and check for duplicates against existing bullets"
+}
