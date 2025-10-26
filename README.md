@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-blue)](https://docs.claude.com/en/docs/claude-code)
-[![Plugins: 21](https://img.shields.io/badge/Plugins-21-green)](https://github.com/jmanhype/claude-code-plugins)
+[![Plugins: 23](https://img.shields.io/badge/Plugins-23-green)](https://github.com/jmanhype/claude-code-plugins)
 
 Transform Claude Code into a specialized multi-agent system. Install curated plugins for AI safety monitoring, quantitative trading, GitHub automation, distributed coordination, and systematic development workflows.
 
@@ -65,24 +65,77 @@ Session-based agentic development framework:
 
 ---
 
-### 🎯 Quantitative Trading System
+### 🎯 Quantitative Trading System (QTS) v1.0.0
 
 **Install:** `/plugin install quant-trading-system`
 
-Complete trading stack with:
+Production-ready quantitative trading infrastructure with:
 
-- Risk management & position sizing
-- Circuit breakers & kill switches
-- Pre/post trade hooks
-- Real-time safety guards
-- CCXT exchange integration
+- **Multi-layer Risk Management**: 9+ violation types, leverage caps, position sizing limits
+- **Trading Pipeline**: Market data → LLM decision → Risk validation → Execution → ACE logging
+- **Paper Trading Default**: Live trading disabled by default, requires 3-layer approval
+- **Circuit Breakers**: Daily loss limits (-5%), max drawdown (-10%), order rate limiting
+- **ACE Bullet Logging**: Complete state→action→result capture for every decision
+- **LLM Integration**: Mock/OpenAI/DeepSeek providers with structured JSON decisions
+- **Execution Modes**: Paper (realistic slippage) and live (CCXT integration)
+
+**Risk Management:**
+- Per-symbol leverage caps (BTC/ETH: 1.5x, others: 1.2x)
+- Gross leverage limit: 1.0x portfolio-wide
+- Position sizing: 25% per symbol, 100% gross notional
+- Mandatory stop-loss: 0.5% - 5% bounds, ATR-based dynamic calculation
+- Daily loss limit: -5% triggers auto-flatten and 60-min cooldown
+- Maximum drawdown: -10% emergency halt
 
 **Use Cases:**
+- Automated intraday crypto trading
+- Risk-controlled algorithmic execution
+- LLM-generated trading decisions with safety guardrails
+- Paper trading for strategy validation
 
-- Automated crypto trading
-- Risk-controlled execution
-- Paper & live trading modes
-- 5-minute trading loops
+**Quick Start:**
+```bash
+# Single-tick paper trading
+PYTHONPATH=. python -m qts.main --symbols ETH SOL XRP --llm-provider mock
+
+# Custom risk config
+PYTHONPATH=. python -m qts.main --risk-config config/qts.risk.json --execution-mode paper
+```
+
+---
+
+### 🏆 Tournament Runner
+
+**Install:** `/plugin install tournament-runner`
+
+Multi-variant paper trading tournament system for objective strategy validation:
+
+- **Multi-Variant Testing**: Run multiple strategy variants in parallel (e.g., tp_trail_1.0x, 1.5x, 2.0x)
+- **Daily Leaderboards**: Sharpe ratio, Sortino, max drawdown, hit rate, violations
+- **Promotion Gates**: 4-week validation with objective criteria:
+  - Sharpe > 1.2, MDD < 10%, hit rate > 45%
+  - Trades/week > 20, zero violations
+- **Deterministic Simulation**: Reproducible results for A/B testing
+- **JSON Output**: Complete metrics for post-analysis
+
+**Use Cases:**
+- Strategy variant comparison and selection
+- Pre-production validation (4-week gate)
+- Continuous paper trading loops
+- Risk-free strategy evolution
+
+**Quick Start:**
+```bash
+# Run 7-day tournament with 3 variants
+PYTHONPATH=. python -m qts.tournament \
+  --variants tp_trail_1.0 tp_trail_1.5 tp_trail_2.0 \
+  --days 7
+
+# Check if variant meets promotion criteria
+PYTHONPATH=. python -m qts.tournament \
+  --check-gate tp_trail_1.5 \
+  --gate-weeks 4
+```
 
 ---
 
@@ -154,6 +207,8 @@ Advanced swarm patterns:
 | `code-safety-monitor`         | Safety        | DSPy-powered backdoor detection (90% TPR)    |
 | `modular-agentic-dev`         | Methodology   | Session-based agentic development framework  |
 | `quant-trading-system`        | Trading       | Complete quantitative trading stack          |
+| `tournament-runner`           | Trading       | Multi-variant paper tournament orchestrator  |
+| `ace-context-engineering`     | Logging       | ACE bullet logging for agentic systems       |
 | `research-execution-pipeline` | Research      | DSPy research + GEPA optimization            |
 | `github-automation-suite`     | GitHub        | 13 GitHub automation agents                  |
 | `swarm-coordination`          | Swarm         | Adaptive/hierarchical/mesh coordinators      |
@@ -187,6 +242,7 @@ Advanced swarm patterns:
 
 ```bash
 /plugin install quant-trading-system
+/plugin install tournament-runner
 /plugin install research-execution-pipeline
 /plugin install market-intelligence
 ```
