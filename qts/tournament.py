@@ -194,6 +194,9 @@ class TournamentRunner:
         """Simulate one variant over N days."""
         import random
 
+        # Use deterministic RNG per variant for reproducibility
+        rng = random.Random(hash(variant.name) % (2**32))
+
         stats = VariantStats(name=variant.name)
         equity = self.initial_equity
         stats.equity_curve.append(equity)
@@ -203,20 +206,20 @@ class TournamentRunner:
         total_trades = days * trades_per_day
 
         for _ in range(total_trades):
-            symbol = random.choice(self.symbols)
-            side = "long" if random.random() < 0.6 else "short"
+            symbol = rng.choice(self.symbols)
+            side = "long" if rng.random() < 0.6 else "short"
 
             # Simulate trade outcome based on variant TP multiplier
             # Higher TP = fewer wins but bigger wins
             win_prob = 0.5 - (variant.tp_trail_atr_mult - 1.0) * 0.1
             win_prob = max(0.3, min(0.7, win_prob))
 
-            is_win = random.random() < win_prob
+            is_win = rng.random() < win_prob
             if is_win:
-                pnl_pct = random.uniform(0.01, 0.03) * variant.tp_trail_atr_mult
+                pnl_pct = rng.uniform(0.01, 0.03) * variant.tp_trail_atr_mult
                 stats.winning_trades += 1
             else:
-                pnl_pct = random.uniform(-0.02, -0.01)
+                pnl_pct = rng.uniform(-0.02, -0.01)
                 stats.losing_trades += 1
 
             stats.total_trades += 1
@@ -228,9 +231,9 @@ class TournamentRunner:
 
         stats.total_pnl = equity - self.initial_equity
         stats.total_pnl_pct = (equity - self.initial_equity) / self.initial_equity
-        stats.avg_hold_hours = random.uniform(2.0, 6.0)
-        stats.avg_latency_ms = random.uniform(100.0, 300.0)
-        stats.reject_rate = random.uniform(0.0, 0.05)
+        stats.avg_hold_hours = rng.uniform(2.0, 6.0)
+        stats.avg_latency_ms = rng.uniform(100.0, 300.0)
+        stats.reject_rate = rng.uniform(0.0, 0.05)
 
         return stats
 

@@ -265,7 +265,7 @@ def main():
     print(f"Total ticks: {len(bullets)}")
     print(f"Trades: {sum(1 for b in bullets if b.llm_decision['decision'] == 'TRADE')}")
     print(f"Rejected: {sum(1 for b in bullets if 'rejected' in b.tags)}")
-    print(f"Executed: {sum(1 for b in bullets if b.execution_result and b.execution_result['success'])}")
+    print(f"Executed: {sum(1 for b in bullets if isinstance(b.execution_result, dict) and b.execution_result.get('success'))}")
 
     stats = bullet_store.get_stats()
     print(f"\nBullet store: {stats['total']} total bullets")
