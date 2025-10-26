@@ -403,8 +403,8 @@ class QTSOrchestrator:
         if not self.tournament_dir.exists():
             return None
 
-        # Find all results.json files
-        result_files = list(self.tournament_dir.glob("**/results.json"))
+        # Find all tournament_*.json files
+        result_files = list(self.tournament_dir.glob("tournament_*.json"))
         if not result_files:
             return None
 
@@ -413,7 +413,26 @@ class QTSOrchestrator:
 
         try:
             with open(latest) as f:
-                return json.load(f)
+                tournament_data = json.load(f)
+                # Extract winner from tournament data
+                if 'results' in tournament_data:
+                    # Find best variant by Sharpe ratio
+                    best_variant = None
+                    best_sharpe = float('-inf')
+                    for variant, stats in tournament_data['results'].items():
+                        if stats.get('sharpe', float('-inf')) > best_sharpe:
+                            best_sharpe = stats['sharpe']
+                            best_variant = variant
+
+                    if best_variant:
+                        return {
+                            'winner': best_variant,
+                            'pnl': tournament_data['results'][best_variant].get('total_pnl', 0),
+                            'sharpe': best_sharpe,
+                            'all_results': tournament_data
+                        }
+
+                return tournament_data
         except Exception as e:
             logger.error(f"Failed to load tournament results from {latest}: {e}")
             return None
