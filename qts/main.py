@@ -24,6 +24,7 @@ from qts.llm_client import get_llm_client, DecisionType
 from qts.risk import RiskManager, RiskConfig, PortfolioState
 from qts.executor import get_executor, ExecutionResult
 from qts.bullets import Bullet, BulletStore
+from qts.market_intelligence import get_market_intelligence
 
 
 def load_prompt(path: str = "prompts/canonical_intraday_prompt.md") -> str:
@@ -34,14 +35,44 @@ def load_prompt(path: str = "prompts/canonical_intraday_prompt.md") -> str:
     return prompt_path.read_text()
 
 
-def fetch_market_data(symbol: str) -> Dict[str, Any]:
+def fetch_market_data(symbol: str, use_market_intelligence: bool = False) -> Dict[str, Any]:
     """
     Fetch current market data for symbol.
 
-    In production, this would call CCXT or Hyperliquid API.
-    For now, returns mock data.
+    Args:
+        symbol: Trading symbol (BTC, ETH, etc)
+        use_market_intelligence: If True, use real CCXT data via MarketIntelligence
+
+    Returns:
+        Market data dict with price, volume, ATR, etc.
     """
-    # TODO: Integrate with CCXT or Hyperliquid
+    if use_market_intelligence:
+        # Use real market data via CCXT
+        try:
+            mi = get_market_intelligence(exchange="binance", testnet=True)
+            data = mi.get_market_data(symbol)
+
+            # Convert to format expected by QTS
+            return {
+                "symbol": symbol,
+                "price": data['current_price'],
+                "volume": data['volume_24h'],
+                "atr": data['current_price'] * data['volatility'],  # Approximate ATR from volatility
+                "ma_20": data['current_price'],  # Would need historical data for real MA
+                "timestamp": data['timestamp'],
+                # Extra fields from market intelligence
+                "bid": data['bid'],
+                "ask": data['ask'],
+                "spread_pct": data['spread_pct'],
+                "volatility": data['volatility'],
+                "order_book_imbalance": data['order_book_depth']['imbalance'],
+                "market_intelligence_enabled": True
+            }
+        except Exception as e:
+            print(f"Warning: Market Intelligence failed, falling back to mock: {e}")
+            # Fall through to mock data
+
+    # Mock data (original implementation)
     import random
 
     base_prices = {
@@ -62,7 +93,8 @@ def fetch_market_data(symbol: str) -> Dict[str, Any]:
         "volume": random.uniform(1e6, 1e8),
         "atr": price * random.uniform(0.01, 0.05),
         "ma_20": price * random.uniform(0.95, 1.05),
-        "timestamp": "2025-01-01T00:00:00Z"
+        "timestamp": "2025-01-01T00:00:00Z",
+        "market_intelligence_enabled": False
     }
 
 
@@ -72,10 +104,20 @@ def run_tick(
     risk_manager: RiskManager,
     executor,
     bullet_store: BulletStore,
-    prompt: str
+    prompt: str,
+    use_market_intelligence: bool = False
 ) -> Bullet:
     """
     Execute one trading tick.
+
+    Args:
+        symbol: Trading symbol
+        llm_client: LLM client for decisions
+        risk_manager: Risk manager
+        executor: Trade executor
+        bullet_store: ACE bullet store
+        prompt: Trading strategy prompt
+        use_market_intelligence: Use real CCXT data if True
 
     Returns:
         ACE bullet with full state→action→result
@@ -83,8 +125,9 @@ def run_tick(
     print(f"\n[{symbol}] Starting tick...")
 
     # 1. Fetch market data
-    market_data = fetch_market_data(symbol)
-    print(f"[{symbol}] Market: {market_data['price']:.2f}, ATR: {market_data['atr']:.2f}")
+    market_data = fetch_market_data(symbol, use_market_intelligence)
+    mi_status = "🌐 REAL" if market_data.get('market_intelligence_enabled') else "🎲 MOCK"
+    print(f"[{symbol}] Market ({mi_status}): {market_data['price']:.2f}, ATR: {market_data['atr']:.2f}")
 
     # 2. LLM decision
     decision = llm_client.get_decision(prompt, market_data)
@@ -204,6 +247,11 @@ def main():
         action="store_true",
         help="Dry run (no execution)"
     )
+    parser.add_argument(
+        "--use-market-intelligence",
+        action="store_true",
+        help="Use real CCXT market data (requires ccxt installed)"
+    )
 
     args = parser.parse_args()
 
@@ -233,6 +281,7 @@ def main():
     print(f"Execution Mode: {args.execution_mode}")
     print(f"Symbols: {', '.join(args.symbols)}")
     print(f"Risk Config: {args.risk_config}")
+    print(f"Market Intelligence: {'ENABLED (Real CCXT)' if args.use_market_intelligence else 'DISABLED (Mock Data)'}")
     print(f"Dry Run: {args.dry_run}")
     print("=" * 60)
 
@@ -250,7 +299,8 @@ def main():
                 risk_manager=risk_manager,
                 executor=executor,
                 bullet_store=bullet_store,
-                prompt=prompt
+                prompt=prompt,
+                use_market_intelligence=args.use_market_intelligence
             )
             bullets.append(bullet)
         except Exception as e:

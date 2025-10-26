@@ -70,6 +70,8 @@ class RiskConfig:
         """Load config from JSON file."""
         with open(path) as f:
             data = json.load(f)
+        # Filter out comment fields (those starting with _)
+        data = {k: v for k, v in data.items() if not k.startswith('_')}
         return cls(**data)
 
     def to_dict(self) -> Dict[str, Any]:
