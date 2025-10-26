@@ -473,7 +473,7 @@ def main():
     )
     parser.add_argument(
         "--llm-provider",
-        choices=["openai", "mock", "deepseek"],
+        choices=["openai", "mock", "deepseek", "anthropic", "gemini"],
         default="mock",
         help="LLM provider"
     )
@@ -494,6 +494,15 @@ def main():
     # Check environment
     if args.llm_provider == "openai" and not os.getenv('OPENAI_API_KEY'):
         logger.error("OPENAI_API_KEY environment variable not set")
+        sys.exit(1)
+    if args.llm_provider == "anthropic" and not os.getenv('ANTHROPIC_API_KEY'):
+        logger.error("ANTHROPIC_API_KEY environment variable not set")
+        sys.exit(1)
+    if args.llm_provider == "deepseek" and not os.getenv('DEEPSEEK_API_KEY'):
+        logger.error("DEEPSEEK_API_KEY environment variable not set")
+        sys.exit(1)
+    if args.llm_provider == "gemini" and not os.getenv('GEMINI_API_KEY'):
+        logger.error("GEMINI_API_KEY environment variable not set")
         sys.exit(1)
 
     # Initialize orchestrator

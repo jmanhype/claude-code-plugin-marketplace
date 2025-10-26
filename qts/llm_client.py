@@ -195,12 +195,120 @@ class DeepSeekLLM(LLMClient):
             return TradingDecision.from_json(fallback, str(e))
 
 
+class GeminiLLM(LLMClient):
+    """Google Gemini client for trading decisions."""
+
+    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-2.0-flash-exp"):
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        self.model = model
+        if not self.api_key:
+            raise ValueError("GEMINI_API_KEY not found in environment")
+
+    def get_decision(self, prompt: str, market_data: Dict[str, Any]) -> TradingDecision:
+        """Query Gemini API for trading decision."""
+        try:
+            import google.generativeai as genai
+
+            genai.configure(api_key=self.api_key)
+            model = genai.GenerativeModel(
+                model_name=self.model,
+                generation_config={
+                    "temperature": 0.7,
+                    "max_output_tokens": 1024,
+                }
+            )
+
+            # Format the request
+            full_prompt = f"{prompt}\n\nHere is the current market data. Respond with JSON only:\n\n{json.dumps(market_data, indent=2)}"
+
+            response = model.generate_content(full_prompt)
+            raw = response.text
+
+            # Parse JSON from response (handle potential markdown wrapping)
+            if "```json" in raw:
+                json_start = raw.find("```json") + 7
+                json_end = raw.find("```", json_start)
+                raw = raw[json_start:json_end].strip()
+            elif "```" in raw:
+                json_start = raw.find("```") + 3
+                json_end = raw.find("```", json_start)
+                raw = raw[json_start:json_end].strip()
+
+            data = json.loads(raw)
+            return TradingDecision.from_json(data, raw)
+
+        except Exception as e:
+            # Fail safe to NO_TRADE on error
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"LLM error: {str(e)[:200]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+
+
+class AnthropicLLM(LLMClient):
+    """Anthropic Claude client for trading decisions."""
+
+    def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-5-sonnet-20241022"):
+        self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+        self.model = model
+        if not self.api_key:
+            raise ValueError("ANTHROPIC_API_KEY not found in environment")
+
+    def get_decision(self, prompt: str, market_data: Dict[str, Any]) -> TradingDecision:
+        """Query Anthropic API for trading decision."""
+        try:
+            import anthropic
+
+            client = anthropic.Anthropic(api_key=self.api_key)
+
+            # Format the request for Claude
+            message = client.messages.create(
+                model=self.model,
+                max_tokens=1024,
+                temperature=0.7,
+                system=prompt,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"Here is the current market data. Respond with JSON only:\n\n{json.dumps(market_data, indent=2)}"
+                    }
+                ]
+            )
+
+            # Extract text response
+            raw = message.content[0].text
+
+            # Parse JSON from response (handle potential markdown wrapping)
+            if "```json" in raw:
+                json_start = raw.find("```json") + 7
+                json_end = raw.find("```", json_start)
+                raw = raw[json_start:json_end].strip()
+            elif "```" in raw:
+                json_start = raw.find("```") + 3
+                json_end = raw.find("```", json_start)
+                raw = raw[json_start:json_end].strip()
+
+            data = json.loads(raw)
+            return TradingDecision.from_json(data, raw)
+
+        except Exception as e:
+            # Fail safe to NO_TRADE on error
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"LLM error: {str(e)[:200]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+
+
 def get_llm_client(provider: str = "mock", **kwargs) -> LLMClient:
     """
     Factory function to create LLM client.
 
     Args:
-        provider: One of "mock", "openai", "deepseek"
+        provider: One of "mock", "openai", "deepseek", "anthropic", "gemini"
         **kwargs: Provider-specific arguments
 
     Returns:
@@ -209,7 +317,9 @@ def get_llm_client(provider: str = "mock", **kwargs) -> LLMClient:
     providers = {
         "mock": LocalHeuristicLLM,
         "openai": OpenAILLM,
-        "deepseek": DeepSeekLLM
+        "deepseek": DeepSeekLLM,
+        "anthropic": AnthropicLLM,
+        "gemini": GeminiLLM
     }
 
     if provider not in providers:

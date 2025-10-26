@@ -226,7 +226,7 @@ def main():
     parser.add_argument(
         "--llm-provider",
         default="mock",
-        choices=["mock", "openai", "deepseek"],
+        choices=["mock", "openai", "deepseek", "anthropic", "gemini"],
         help="LLM provider"
     )
     parser.add_argument(
