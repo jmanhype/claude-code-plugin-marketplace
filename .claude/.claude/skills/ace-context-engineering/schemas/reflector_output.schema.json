@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude.com/schemas/ace/reflector_output.schema.json",
+  "title": "ACE Reflector Output Schema",
+  "description": "Strict JSON output from Reflector mode",
+  "type": "object",
+  "required": ["proposed_deltas", "justification", "needs_followup"],
+  "properties": {
+    "proposed_deltas": {
+      "$ref": "delta.schema.json",
+      "description": "Proposed delta updates based on generator performance"
+    },
+    "justification": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Rationale for the proposed deltas"
+    },
+    "needs_followup": {
+      "type": "boolean",
+      "description": "Whether this requires human review"
+    }
+  },
+  "additionalProperties": false
+}

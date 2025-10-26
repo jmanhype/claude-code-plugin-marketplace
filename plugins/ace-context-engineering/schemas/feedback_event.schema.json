@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude.com/schemas/ace/feedback_event.schema.json",
+  "title": "ACE Feedback Event Schema",
+  "description": "Schema for user or execution feedback events (for ratings.jsonl)",
+  "type": "object",
+  "required": ["type", "bullet_id", "value"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["user_rating", "exec_success", "exec_failure", "validation_pass", "validation_fail"],
+      "description": "Type of feedback event"
+    },
+    "bullet_id": {
+      "type": "string",
+      "description": "ID of the bullet being rated"
+    },
+    "value": {
+      "type": "integer",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "Rating value: 1 (helpful), 0 (neutral), -1 (harmful)"
+    },
+    "note": {
+      "type": "string",
+      "description": "Optional note explaining the rating"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the feedback was recorded"
+    }
+  },
+  "additionalProperties": false
+}

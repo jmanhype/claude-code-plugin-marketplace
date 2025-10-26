@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude.com/schemas/ace/delta.schema.json",
+  "title": "ACE Delta Schema",
+  "description": "Schema for incremental updates to ACE playbook",
+  "type": "object",
+  "properties": {
+    "delta_id": {
+      "type": "string",
+      "pattern": "^delta-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$",
+      "description": "Unique identifier for this delta in format: delta-YYYY-MM-DD-NNN"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this delta was created"
+    },
+    "author": {
+      "type": "string",
+      "enum": ["agent", "human", "collaborative"],
+      "default": "agent",
+      "description": "Who proposed this delta"
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Overall rationale for this delta update"
+    },
+    "task_context": {
+      "type": "string",
+      "description": "Task or scenario that motivated this delta"
+    },
+    "reviewed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this delta has been reviewed by a human"
+    },
+    "new_bullets": {
+      "type": "array",
+      "items": {
+        "$ref": "bullet.schema.json"
+      },
+      "default": [],
+      "description": "New bullets to add to the playbook"
+    },
+    "edits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "set"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^bullet-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$",
+            "description": "ID of bullet to edit"
+          },
+          "set": {
+            "type": "object",
+            "properties": {
+              "title": {"type": "string"},
+              "content": {"type": "string"},
+              "tags": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "confidence": {
+                "type": "string",
+                "enum": ["high", "medium", "low"]
+              },
+              "status": {
+                "type": "string",
+                "enum": ["active", "deprecated", "archived", "under_review"]
+              },
+              "links": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            },
+            "minProperties": 1,
+            "description": "Fields to update (only include fields being changed)"
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Why this edit is necessary"
+          }
+        }
+      },
+      "default": [],
+      "description": "Edits to existing bullets"
+    },
+    "merges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["keep_id", "merge_ids", "rationale"],
+        "properties": {
+          "keep_id": {
+            "type": "string",
+            "pattern": "^bullet-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$",
+            "description": "ID of bullet to keep"
+          },
+          "merge_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^bullet-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$"
+            },
+            "minItems": 1,
+            "description": "IDs of bullets to merge into keep_id"
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Why these bullets are redundant and should be merged"
+          },
+          "merged_content": {
+            "type": "string",
+            "description": "Optional: new content combining best of both bullets"
+          }
+        }
+      },
+      "default": [],
+      "description": "Merge operations for redundant bullets"
+    },
+    "deprecations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "reason"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^bullet-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$",
+            "description": "ID of bullet to deprecate"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Why this bullet no longer applies"
+          },
+          "replacement_id": {
+            "type": "string",
+            "pattern": "^bullet-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$",
+            "description": "Optional: ID of bullet that replaces this one"
+          }
+        }
+      },
+      "default": [],
+      "description": "Bullets to deprecate (moved to archived status)"
+    },
+    "counters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^bullet-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$",
+            "description": "ID of bullet to update counters"
+          },
+          "helpful_delta": {
+            "type": "integer",
+            "description": "Amount to add to helpful_count (can be negative)"
+          },
+          "harmful_delta": {
+            "type": "integer",
+            "description": "Amount to add to harmful_count (can be negative)"
+          },
+          "evidence": {
+            "type": "object",
+            "properties": {
+              "type": {"type": "string"},
+              "ref": {"type": "string"},
+              "note": {"type": "string"}
+            },
+            "description": "Evidence for this counter update"
+          }
+        }
+      },
+      "default": [],
+      "description": "Counter updates for existing bullets"
+    }
+  },
+  "additionalProperties": false,
+  "anyOf": [
+    {"required": ["new_bullets"]},
+    {"required": ["edits"]},
+    {"required": ["merges"]},
+    {"required": ["deprecations"]},
+    {"required": ["counters"]}
+  ]
+}
