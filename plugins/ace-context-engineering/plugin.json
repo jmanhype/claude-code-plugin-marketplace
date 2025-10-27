@@ -1,8 +1,8 @@
 {
   "name": "ace-context-engineering",
   "displayName": "ACE Context Engineering",
-  "version": "2.0.0",
-  "description": "Agentic Context Engineering system with three-stage FAISS-based curator, AppWorld executor integration, and multi-epoch offline learning. Evolves context through bullets, deltas, and semantic retrieval with TGC/SGC metrics.",
+  "version": "2.0.1",
+  "description": "Agentic Context Engineering system with three-stage FAISS-based curator, AppWorld executor integration, and multi-epoch offline learning. Evolves context through bullets, deltas, and semantic retrieval with TGC/SGC metrics. Fixed critical bullet discovery bugs enabling organic learning from task failures.",
   "author": "jmanhype",
   "license": "CC-BY-4.0",
   "repository": "https://github.com/jmanhype/claude-code-plugin-marketplace",
