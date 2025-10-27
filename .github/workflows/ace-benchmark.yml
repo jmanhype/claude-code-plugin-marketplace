@@ -1,0 +1,141 @@
+name: ACE Benchmark
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+  workflow_dispatch:
+    inputs:
+      num_tasks:
+        description: 'Number of tasks to run (1-50)'
+        required: false
+        default: '5'
+        type: string
+
+      split:
+        description: 'Dataset split'
+        required: false
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - train
+          - test_normal
+          - test_challenge
+
+permissions:
+  contents: write  # For committing results
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install ACE dependencies
+        run: |
+          cd plugins/ace-context-engineering
+          pip install anthropic requests scikit-learn numpy
+
+      - name: Setup AppWorld
+        run: |
+          cd /tmp
+          git clone https://github.com/stonybrooknlp/appworld.git
+          cd appworld
+          pip install -e .
+
+      - name: Download AppWorld data
+        run: |
+          cd /tmp/appworld
+          python -m appworld.apps download || true
+          python -m appworld.data download || true
+
+      - name: Create results directory
+        run: |
+          mkdir -p plugins/ace-context-engineering/results
+
+      - name: Run ACE Benchmarks
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cd plugins/ace-context-engineering
+          python -m benchmarks.run_appworld_standalone \
+            --split "${{ inputs.split || 'dev' }}" \
+            --max-samples ${{ inputs.num_tasks || '5' }} \
+            --playbook skills/playbook.json \
+            --output results/run-${{ github.run_number }}.json \
+            2>&1 | tee results/run-${{ github.run_number }}.log
+
+      - name: Generate Markdown Report
+        if: always()
+        run: |
+          cd plugins/ace-context-engineering
+          cat > results/run-${{ github.run_number }}.md << 'EOF'
+          # ACE Benchmark Run #${{ github.run_number }}
+
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Split**: ${{ inputs.split || 'dev' }}
+          **Tasks**: ${{ inputs.num_tasks || '5' }}
+          **Workflow**: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          ## Results
+
+          See `run-${{ github.run_number }}.json` for detailed results.
+
+          ## Logs
+
+          See `run-${{ github.run_number }}.log` for execution logs.
+
+          ## Playbook Status
+
+          Bullets before: $(jq '.metadata.total_bullets' skills/playbook.json)
+
+          ---
+
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          EOF
+
+      - name: Commit Results
+        if: always()
+        run: |
+          git config user.name "ACE Bot"
+          git config user.email "ace-bot@claude-code-marketplace"
+
+          git add plugins/ace-context-engineering/results/ || true
+          git add plugins/ace-context-engineering/skills/playbook.json || true
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: ACE benchmark results run #${{ github.run_number }}
+
+          - Tasks: ${{ inputs.num_tasks || '5' }}
+          - Split: ${{ inputs.split || 'dev' }}
+          - Workflow: ${{ github.run_id }}
+
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+          Co-Authored-By: Claude <noreply@anthropic.com>"
+            git push
+          fi
+
+      - name: Upload Results as Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ace-benchmark-run-${{ github.run_number }}
+          path: |
+            plugins/ace-context-engineering/results/run-${{ github.run_number }}.*
+          retention-days: 90
