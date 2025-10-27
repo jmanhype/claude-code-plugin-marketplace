@@ -1,0 +1,227 @@
+──────────────────────────────── Overall Stats ─────────────────────────────────
+Num Passed Tests : 3
+Num Failed Tests : 5
+Num Total  Tests : 8
+──────────────────────────────────── Passes ────────────────────────────────────
+>> Passed Requirement
+assert answers match.
+>> Passed Requirement
+obtain added, updated, removed file_system.File records using
+models.changed_records,
+and assert 0 were updated.
+>> Passed Requirement
+obtain added, removed file_system.Directory records using
+models.changed_records.
+and assert 0 were added.
+──────────────────────────────────── Fails ─────────────────────────────────────
+>> Failed Requirement
+assert model changes match file_system.Directory, file_system.File.
+```python
+with test(
+    """
+    assert model changes match file_system.Directory, file_system.File.
+    """
+):
+    test.case(models.changed_model_names(), "==", {"file_system.Directory",
+"file_system.File"})
+```
+----------
+AssertionError:  set() == {'file_system.File', 'file_system.Directory'}
+
+In right but not left:
+['file_system.File', 'file_system.Directory']
+>> Failed Requirement
+assert all added files have paths that match private_data.compressed_file_paths
+(ignoring order).
+```python
+with test(
+    """
+    assert all added files have paths that match
+private_data.compressed_file_paths (ignoring order).
+    """
+):
+    added_file_paths = list_of(added_files, "path")
+    test.case(
+        added_file_paths,
+```
+----------
+AssertionError:
+[]
+==
+['/home/jason/photos/vacations/bali.tar',
+'/home/jason/photos/vacations/barcelona.tar',
+'/home/jason/photos/vacations/kyoto.tar',
+'/home/jason/photos/vacations/maldives.tar']
+
+In right but not left:
+['/home/jason/photos/vacations/bali.tar',
+'/home/jason/photos/vacations/barcelona.tar',
+'/home/jason/photos/vacations/kyoto.tar',
+'/home/jason/photos/vacations/maldives.tar']
+>> Failed Requirement
+assert all removed files have paths that match keys of
+private_data.decompressed_file_path_to_content (ignoring order).
+```python
+with test(
+    """
+    assert all removed files have paths that match keys of
+    private_data.decompressed_file_path_to_content (ignoring order).
+    """
+):
+    removed_file_paths = list_of(removed_files, "path")
+    test.case(
+```
+----------
+AssertionError:
+[]
+==
+['/home/jason/photos/vacations/bali/IMG_0215c47.jpeg',
+'/home/jason/photos/vacations/bali/IMG_0e9a6d2.jpg',
+'/home/jason/photos/vacations/bali/IMG_18e6223.jpg',
+'/home/jason/photos/vacations/bali/IMG_7393d77.jpg',
+'/home/jason/photos/vacations/bali/IMG_77fe15b.jpeg',
+'/home/jason/photos/vacations/bali/IMG_acb39c4.png',
+'/home/jason/photos/vacations/bali/IMG_ebb6914.png',
+'/home/jason/photos/vacations/barcelona/IMG_34128f4.png',
+'/home/jason/photos/vacations/barcelona/IMG_5a8a8bc.jpeg',
+'/home/jason/photos/vacations/barcelona/IMG_986800f.png',
+'/home/jason/photos/vacations/barcelona/IMG_a35f6d4.jpg',
+'/home/jason/photos/vacations/barcelona/IMG_e362a6c.jpg',
+'/home/jason/photos/vacations/barcelona/IMG_f3edf9c.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_0751f75.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_4054edb.jpeg',
+'/home/jason/photos/vacations/kyoto/IMG_74446bd.jpeg',
+'/home/jason/photos/vacations/kyoto/IMG_870b5e1.png',
+'/home/jason/photos/vacations/kyoto/IMG_c4624b3.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_c688479.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_cd390d2.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_d2f2246.jpeg',
+'/home/jason/photos/vacations/kyoto/IMG_e76c633.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_eb85e35.png',
+'/home/jason/photos/vacations/maldives/IMG_221ee28.png',
+'/home/jason/photos/vacations/maldives/IMG_29603cc.jpg',
+'/home/jason/photos/vacations/maldives/IMG_2f5fd9a.jpeg',
+'/home/jason/photos/vacations/maldives/IMG_7bb6d57.jpg',
+'/home/jason/photos/vacations/maldives/IMG_94ba184.png',
+'/home/jason/photos/vacations/maldives/IMG_9b14937.png',
+'/home/jason/photos/vacations/maldives/IMG_ba32252.png',
+'/home/jason/photos/vacations/maldives/IMG_c12bff5.png',
+'/home/jason/photos/vacations/maldives/IMG_f1959ce.jpg',
+'/home/jason/photos/vacations/maldives/IMG_ffea32a.jpg']
+
+In right but not left:
+['/home/jason/photos/vacations/bali/IMG_0215c47.jpeg',
+'/home/jason/photos/vacations/bali/IMG_0e9a6d2.jpg',
+'/home/jason/photos/vacations/bali/IMG_18e6223.jpg',
+'/home/jason/photos/vacations/bali/IMG_7393d77.jpg',
+'/home/jason/photos/vacations/bali/IMG_77fe15b.jpeg',
+'/home/jason/photos/vacations/bali/IMG_acb39c4.png',
+'/home/jason/photos/vacations/bali/IMG_ebb6914.png',
+'/home/jason/photos/vacations/barcelona/IMG_34128f4.png',
+'/home/jason/photos/vacations/barcelona/IMG_5a8a8bc.jpeg',
+'/home/jason/photos/vacations/barcelona/IMG_986800f.png',
+'/home/jason/photos/vacations/barcelona/IMG_a35f6d4.jpg',
+'/home/jason/photos/vacations/barcelona/IMG_e362a6c.jpg',
+'/home/jason/photos/vacations/barcelona/IMG_f3edf9c.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_0751f75.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_4054edb.jpeg',
+'/home/jason/photos/vacations/kyoto/IMG_74446bd.jpeg',
+'/home/jason/photos/vacations/kyoto/IMG_870b5e1.png',
+'/home/jason/photos/vacations/kyoto/IMG_c4624b3.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_c688479.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_cd390d2.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_d2f2246.jpeg',
+'/home/jason/photos/vacations/kyoto/IMG_e76c633.jpg',
+'/home/jason/photos/vacations/kyoto/IMG_eb85e35.png',
+'/home/jason/photos/vacations/maldives/IMG_221ee28.png',
+'/home/jason/photos/vacations/maldives/IMG_29603cc.jpg',
+'/home/jason/photos/vacations/maldives/IMG_2f5fd9a.jpeg',
+'/home/jason/photos/vacations/maldives/IMG_7bb6d57.jpg',
+'/home/jason/photos/vacations/maldives/IMG_94ba184.png',
+'/home/jason/photos/vacations/maldives/IMG_9b14937.png',
+'/home/jason/photos/vacations/maldives/IMG_ba32252.png',
+'/home/jason/photos/vacations/maldives/IMG_c12bff5.png',
+'/home/jason/photos/vacations/maldives/IMG_f1959ce.jpg',
+'/home/jason/photos/vacations/maldives/IMG_ffea32a.jpg']
+>> Failed Requirement
+assert path to content mapping of removed files match
+private_data.decompressed_file_path_to_content.
+```python
+with test(
+    """
+    assert path to content mapping of removed files match
+private_data.decompressed_file_path_to_content.
+    """
+):
+    removed_path_to_content = dict_of(removed_files, "path", "content")
+    test.case(removed_path_to_content, "==",
+private_data.decompressed_file_path_to_content)
+```
+----------
+AssertionError:
+{}
+==
+Munch({'/home/jason/photos/vacations/bali/IMG_0215c47.jpeg':
+'binary:db9604cee8...', '/home/jason/photos/vacations/bali/IMG_0e9a6d2.jpg':
+'binary:b8895efb0d...', '/home/jason/photos/vacations/bali/IMG_18e6223.jpg':
+'binary:86d683808e...', '/home/jason/photos/vacations/bali/IMG_7393d77.jpg':
+'binary:d94b8a9fe4...', '/home/jason/photos/vacations/bali/IMG_77fe15b.jpeg':
+'binary:c3f8af48ed...', '/home/jason/photos/vacations/bali/IMG_acb39c4.png':
+'binary:32360e2126...', '/home/jason/photos/vacations/bali/IMG_ebb6914.png':
+'binary:937715b018...',
+'/home/jason/photos/vacations/barcelona/IMG_34128f4.png':
+'binary:ad8402701e...',
+'/home/jason/photos/vacations/barcelona/IMG_5a8a8bc.jpeg':
+'binary:9d5560a20e...',
+'/home/jason/photos/vacations/barcelona/IMG_986800f.png':
+'binary:70d1a61706...',
+'/home/jason/photos/vacations/barcelona/IMG_a35f6d4.jpg':
+'binary:0dfd9e97d3...',
+'/home/jason/photos/vacations/barcelona/IMG_e362a6c.jpg':
+'binary:bc197570ce...',
+'/home/jason/photos/vacations/barcelona/IMG_f3edf9c.jpg':
+'binary:7d272ed1d9...', '/home/jason/photos/vacations/kyoto/IMG_0751f75.jpg':
+'binary:294322a72c...', '/home/jason/photos/vacations/kyoto/IMG_4054edb.jpeg':
+'binary:1e3cc2ec5f...', '/home/jason/photos/vacations/kyoto/IMG_74446bd.jpeg':
+'binary:4ffbe64d0e...', '/home/jason/photos/vacations/kyoto/IMG_870b5e1.png':
+'binary:78cc5f19fa...', '/home/jason/photos/vacations/kyoto/IMG_c4624b3.jpg':
+'binary:79a42d8b93...', '/home/jason/photos/vacations/kyoto/IMG_c688479.jpg':
+'binary:721a86be2a...', '/home/jason/photos/vacations/kyoto/IMG_cd390d2.jpg':
+'binary:1f20170493...', '/home/jason/photos/vacations/kyoto/IMG_d2f2246.jpeg':
+'binary:4474348863...', '/home/jason/photos/vacations/kyoto/IMG_e76c633.jpg':
+'binary:d82318050a...', '/home/jason/photos/vacations/kyoto/IMG_eb85e35.png':
+'binary:55d44f4852...', '/home/jason/photos/vacations/maldives/IMG_221ee28.png':
+'binary:65dc555457...', '/home/jason/photos/vacations/maldives/IMG_29603cc.jpg':
+'binary:5e62f4f42a...',
+'/home/jason/photos/vacations/maldives/IMG_2f5fd9a.jpeg':
+'binary:855da149f9...', '/home/jason/photos/vacations/maldives/IMG_7bb6d57.jpg':
+'binary:d9f333ec4d...', '/home/jason/photos/vacations/maldives/IMG_94ba184.png':
+'binary:4ffadde333...', '/home/jason/photos/vacations/maldives/IMG_9b14937.png':
+'binary:2f96f4a770...', '/home/jason/photos/vacations/maldives/IMG_ba32252.png':
+'binary:3eb76af574...', '/home/jason/photos/vacations/maldives/IMG_c12bff5.png':
+'binary:f3940c7643...', '/home/jason/photos/vacations/maldives/IMG_f1959ce.jpg':
+'binary:e5cdd50021...', '/home/jason/photos/vacations/maldives/IMG_ffea32a.jpg':
+'binary:b3ebf145c8...'})
+>> Failed Requirement
+assert all removed file_system.Directory records have tilde_paths that match
+private_data.decompressed_directory_paths (ignoring order).
+```python
+with test(
+    """
+    assert all removed file_system.Directory records have tilde_paths that match
+    private_data.decompressed_directory_paths (ignoring order).
+    """
+):
+    removed_directory_paths = list_of(removed_directories, "tilde_path")
+    test.case(
+```
+----------
+AssertionError:
+[]
+==
+['~/photos/vacations/bali/', '~/photos/vacations/barcelona/',
+'~/photos/vacations/kyoto/', '~/photos/vacations/maldives/']
+
+In right but not left:
+['~/photos/vacations/bali/', '~/photos/vacations/barcelona/',
+'~/photos/vacations/kyoto/', '~/photos/vacations/maldives/']

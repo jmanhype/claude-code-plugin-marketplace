@@ -1,0 +1,126 @@
+{
+  "delta_id": "delta-2025-10-26-003",
+  "timestamp": "2025-10-26T12:06:00Z",
+  "author": "agent",
+  "rationale": "Implemented REAL ACE framework from paper (arXiv:2510.04618v1), replacing pattern-matching stub with full Generator → Reflector → Curator cycle. Previous implementation retrieved bullets but ignored them in code generation. Now bullets actively guide task solving, feedback is tracked, and playbook evolves through multi-epoch adaptation.",
+  "task_context": "Real ACE implementation task: Replace pattern matching with bullet-driven adaptation",
+  "reviewed": false,
+  "new_bullets": [
+    {
+      "id": "bullet-2025-10-26-003",
+      "title": "Implement real ACE Generator → Reflector → Curator cycle, not stubs",
+      "content": "When implementing ACE or similar adaptive frameworks, ensure the full workflow is ACTUALLY implemented, not just stubs. Generator must USE retrieved bullets (not ignore them). Reflector must ANALYZE outcomes and PROPOSE deltas (not return empty). Curator must VALIDATE and MERGE deltas (not no-op). Test with multi-epoch adaptation to verify bullets are being updated. Pattern matching ≠ ACE. Success: helpful_count increments after successful uses.",
+      "tags": ["ace", "implementation", "antipattern", "adaptation", "best_practice"],
+      "evidence": [
+        {
+          "type": "execution",
+          "ref": "ace-implementation-2025-10-26",
+          "note": "Initial implementation had working retrieval but SkillsExecutor ignored bullets. Reflector returned empty deltas. No adaptation occurred. Fixed by: (1) SkillsExecutor._extract_strategies() uses bullet content, (2) Reflector._propose_counter_updates() tracks feedback, (3) Curator.merge_delta() applies changes. Result: 30 bullet updates across 2 epochs, helpful_count incremented from 0→6→12."
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-26T12:06:00Z",
+      "created": "2025-10-26T12:06:00Z",
+      "links": ["bullet-2025-10-26-002"],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-26-004",
+      "title": "Pass bullet feedback through the full Generator → Reflector chain",
+      "content": "When implementing multi-component workflows (Generator → Reflector → Curator), ensure data flows correctly between stages. Generator's bullet_feedback must reach Reflector for counter updates. Store intermediate results (_last_bullet_feedback, _last_strategies) on the method instance if calls are separate. Otherwise Reflector creates empty execution_result and can't propose meaningful deltas. Test by verifying Reflector proposes counter updates when bullets are marked helpful.",
+      "tags": ["ace", "data_flow", "implementation", "debugging", "best_practice"],
+      "evidence": [
+        {
+          "type": "execution",
+          "ref": "ace-implementation-2025-10-26",
+          "note": "Initially reflect() created execution_result with empty bullet_feedback={}. Reflector correctly proposed 0 counter updates. Fixed by storing feedback in generate() as self._last_bullet_feedback and reading in reflect(). Result: 'Proposed 5 counter update(s)' per task."
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-26T12:06:00Z",
+      "created": "2025-10-26T12:06:00Z",
+      "links": ["bullet-2025-10-26-003"],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-26-005",
+      "title": "Test adaptive systems with multi-epoch runs to verify actual learning",
+      "content": "Don't assume an adaptive system works just because it runs. Test with multi-epoch training loops and check: (1) bullets/weights are ACTUALLY updated between epochs, (2) counters/metrics change over time, (3) playbook file is modified on disk, (4) retrieval ranking improves for helpful items. Print epoch summaries showing bullets_added and bullets_updated. Save epoch snapshots to track evolution. If updates stay at 0, the system is broken.",
+      "tags": ["testing", "adaptive_systems", "verification", "best_practice", "ace"],
+      "evidence": [
+        {
+          "type": "execution",
+          "ref": "ace-workflow-test-2025-10-26",
+          "note": "Ran test_ace_workflow.py with 2 epochs, 3 samples. Verified: bullets_updated=15 per epoch (3 tasks × 5 bullets), helpful_count incremented 0→6→12, playbook.json modified with new timestamps. Epoch snapshots saved to playbook_epoch_1.json, playbook_epoch_2.json."
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-26T12:06:00Z",
+      "created": "2025-10-26T12:06:00Z",
+      "links": ["bullet-2025-10-26-003"],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    }
+  ],
+  "edits": [],
+  "merges": [],
+  "deprecations": [],
+  "counters": [
+    {
+      "id": "bullet-2025-10-26-002",
+      "helpful_delta": 1,
+      "evidence": {
+        "type": "execution",
+        "ref": "ace-implementation-task",
+        "note": "Guided implementation of real ACE by highlighting the need to inspect actual data structures (retrieved bullets were being ignored)"
+      }
+    }
+  ],
+  "implementation_summary": {
+    "files_created": [
+      "benchmarks/utils/__init__.py",
+      "benchmarks/utils/base_method.py",
+      "benchmarks/utils/bullet_retriever.py",
+      "benchmarks/utils/skills_executor.py",
+      "benchmarks/utils/reflector.py",
+      "benchmarks/utils/curator.py",
+      "benchmarks/utils/embeddings.py",
+      "benchmarks/utils/claude_code_method.py",
+      "benchmarks/test_ace_workflow.py"
+    ],
+    "key_improvements": [
+      "SkillsExecutor now USES bullets via _extract_strategies() and _generate_code_with_bullets()",
+      "Reflector ANALYZES outcomes with _analyze_outcome() identifying error types",
+      "Reflector PROPOSES deltas with _propose_counter_updates() and _propose_new_bullets()",
+      "Curator VALIDATES with _check_duplicates() using TF-IDF/embeddings",
+      "Curator MERGES with deterministic merge_delta() operations",
+      "Multi-epoch offline adaptation with _adapt_offline() replacing no-op",
+      "Grow-and-refine deduplication with _apply_grow_and_refine()",
+      "Bullet feedback flows: generate() → _last_bullet_feedback → reflect() → Reflector",
+      "Epoch snapshots saved for tracking evolution"
+    ],
+    "test_results": {
+      "tasks": 6,
+      "success_rate": "100%",
+      "bullets_updated": 30,
+      "helpful_count_increment": "0 → 6 → 12 for 5 frequently-used bullets",
+      "epochs": 2,
+      "real_adaptation": true
+    },
+    "architecture": "Skills-based (no external LLM API calls), matching ACE paper's workflow but using Claude Code Skills instead of DeepSeek-V3"
+  }
+}

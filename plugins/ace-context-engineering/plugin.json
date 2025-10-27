@@ -1,13 +1,32 @@
 {
   "name": "ace-context-engineering",
   "displayName": "ACE Context Engineering",
-  "version": "1.0.0",
-  "description": "Agentic Context Engineering system for evolving context through bullets, deltas, and retrieval. Complete with TF-IDF retrieval, schema validation, and production-ready scripts.",
+  "version": "2.0.0",
+  "description": "Agentic Context Engineering system with three-stage FAISS-based curator, AppWorld executor integration, and multi-epoch offline learning. Evolves context through bullets, deltas, and semantic retrieval with TGC/SGC metrics.",
   "author": "jmanhype",
   "license": "CC-BY-4.0",
   "repository": "https://github.com/jmanhype/claude-code-plugin-marketplace",
-  "keywords": ["context", "ace", "agentic", "retrieval", "memory", "bullets", "deltas", "self-improvement"],
+  "keywords": ["context", "ace", "agentic", "retrieval", "memory", "bullets", "deltas", "self-improvement", "faiss", "appworld", "offline-learning"],
   "category": "productivity",
   "homepage": "https://github.com/jmanhype/claude-code-plugin-marketplace",
-  "documentation": "https://github.com/jmanhype/claude-code-plugin-marketplace/blob/main/plugins/ace-context-engineering/README.md"
+  "documentation": "https://github.com/jmanhype/claude-code-plugin-marketplace/blob/main/plugins/ace-context-engineering/README.md",
+  "features": {
+    "three_stage_curator": {
+      "description": "Quality-gated curation with structural validation, FAISS deduplication, and final approval",
+      "status": "stable"
+    },
+    "faiss_deduplication": {
+      "description": "Semantic similarity-based duplicate detection using sentence transformers (384-dim embeddings)",
+      "status": "stable"
+    },
+    "appworld_executor": {
+      "description": "Real task execution in AppWorld environment with TGC/SGC metrics",
+      "status": "beta",
+      "requires": ["AppWorld installation", "Python 3.11+"]
+    },
+    "offline_learning": {
+      "description": "Multi-epoch training with grow-and-refine mechanism",
+      "status": "stable"
+    }
+  }
 }

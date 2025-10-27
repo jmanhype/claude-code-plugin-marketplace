@@ -1,0 +1,128 @@
+{
+  "version": "1.0.0",
+  "schema_version": "1.0.0",
+  "last_updated": "2025-10-26T23:00:00Z",
+  "bullets": [
+    {
+      "id": "appworld-login-001",
+      "title": "Always call login() before using any app API methods",
+      "content": "Every AppWorld app requires authentication. Always call app.login() as the FIRST operation before making any API calls. Example: spotify.login(), venmo.login(), gmail.login(). Skipping login will cause 'access_token' errors.",
+      "tags": [
+        "app.spotify",
+        "app.venmo",
+        "app.gmail",
+        "app.general",
+        "authentication",
+        "critical"
+      ],
+      "evidence": [],
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "seed",
+      "status": "active",
+      "helpful_count": 109,
+      "harmful_count": 1,
+      "last_updated": "2025-10-26T23:58:20.625145",
+      "created": "2025-10-26T23:00:00Z"
+    },
+    {
+      "id": "appworld-search-002",
+      "title": "Use search_* methods not get_* or fetch_* for querying data",
+      "content": "AppWorld APIs use search_* naming convention (e.g., spotify.search_tracks(), venmo.search_transactions()). Don't use get_* or fetch_* - those don't exist. Always check available methods for each app.",
+      "tags": [
+        "app.spotify",
+        "app.venmo",
+        "app.gmail",
+        "api_naming",
+        "critical"
+      ],
+      "evidence": [],
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "seed",
+      "status": "active",
+      "helpful_count": 109,
+      "harmful_count": 1,
+      "last_updated": "2025-10-26T23:58:20.625146",
+      "created": "2025-10-26T23:00:00Z"
+    },
+    {
+      "id": "appworld-complete-003",
+      "title": "Always call apis.supervisor.complete_task() at the end",
+      "content": "Every AppWorld task MUST end with apis.supervisor.complete_task() to signal completion. This is required for the test framework to evaluate results. Missing this call will cause all tests to fail.",
+      "tags": [
+        "app.general",
+        "task_completion",
+        "critical"
+      ],
+      "evidence": [],
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "seed",
+      "status": "active",
+      "helpful_count": 109,
+      "harmful_count": 1,
+      "last_updated": "2025-10-26T23:58:20.625142",
+      "created": "2025-10-26T23:00:00Z"
+    },
+    {
+      "id": "appworld-error-004",
+      "title": "Check API response structure before accessing nested fields",
+      "content": "AppWorld API responses can have varying structures. Always check if fields exist before accessing them (e.g., if 'items' in response, check response.get('data'), etc.). Use .get() with defaults to avoid NoneType errors.",
+      "tags": [
+        "app.general",
+        "error_handling",
+        "defensive"
+      ],
+      "evidence": [],
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "seed",
+      "status": "active",
+      "helpful_count": 109,
+      "harmful_count": 1,
+      "last_updated": "2025-10-26T23:58:20.625143",
+      "created": "2025-10-26T23:00:00Z"
+    },
+    {
+      "id": "appworld-spotify-005",
+      "title": "Spotify: Get user playlists and track details separately",
+      "content": "To find songs in Spotify playlists: (1) Call spotify.get_user_playlists() to get playlist IDs, (2) For each playlist, call spotify.get_playlist_tracks(playlist_id) to get track details including likes/plays.",
+      "tags": [
+        "app.spotify",
+        "playlists",
+        "pattern"
+      ],
+      "evidence": [],
+      "links": [
+        "appworld-login-001"
+      ],
+      "confidence": "high",
+      "scope": "app",
+      "prerequisites": [
+        "appworld-login-001"
+      ],
+      "author": "seed",
+      "status": "active",
+      "helpful_count": 109,
+      "harmful_count": 1,
+      "last_updated": "2025-10-26T23:58:20.625138",
+      "created": "2025-10-26T23:00:00Z"
+    }
+  ],
+  "metadata": {
+    "total_bullets": 5,
+    "active_bullets": 5,
+    "deprecated_bullets": 0,
+    "archived_bullets": 0,
+    "last_curated": "2025-10-26T23:58:20.625153"
+  }
+}

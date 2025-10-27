@@ -1,0 +1,26 @@
+{
+  "timestamp": "20251026_172142",
+  "config": {
+    "max_test_samples": 1,
+    "playbook_path": "/Users/speed/claude-code-plugin-marketplace/plugins/ace-context-engineering/benchmarks/data/playbooks/appworld_playbook.json",
+    "request_dir": "/tmp/appworld_requests"
+  },
+  "test_results": {
+    "results": [
+      {
+        "task_id": "3d9a636_1",
+        "instruction": "Reset friends on venmo to be the same as my friends in my phone. Befriend and unfriend as needed.",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false,
+        "turns": 3,
+        "code_generated": true,
+        "bullets_used": 0
+      }
+    ],
+    "total_samples": 1,
+    "avg_tgc": 0.0,
+    "avg_sgc": 0.0,
+    "success_rate": 0.0
+  }
+}

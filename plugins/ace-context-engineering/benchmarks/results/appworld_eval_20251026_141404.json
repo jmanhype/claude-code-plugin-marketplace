@@ -1,0 +1,112 @@
+{
+  "timestamp": "20251026_141404",
+  "config": {
+    "max_train_samples": 5,
+    "max_test_samples": 5,
+    "max_epochs": 1
+  },
+  "splits": {
+    "train_count": 5,
+    "test_normal_count": 5
+  },
+  "baseline": {
+    "tgc": 0.0,
+    "sgc": 0.0,
+    "results": [
+      {
+        "task_id": "3d9a636_1",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false
+      },
+      {
+        "task_id": "3d9a636_2",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false
+      },
+      {
+        "task_id": "3d9a636_3",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false
+      },
+      {
+        "task_id": "fd1f8fa_1",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false
+      },
+      {
+        "task_id": "fd1f8fa_2",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false
+      }
+    ]
+  },
+  "ace_offline": {
+    "tgc": 0.0,
+    "sgc": 0.0,
+    "training_stats": {
+      "epochs": [
+        {
+          "epoch": 1,
+          "successes": 0,
+          "failures": 5,
+          "bullets_added": 0,
+          "bullets_updated": 0,
+          "success_rate": 0.0
+        }
+      ],
+      "final_metrics": {
+        "total_tasks": 5,
+        "successful_tasks": 0,
+        "bullets_added": 0,
+        "bullets_updated": 0,
+        "success_rate": 0.0
+      }
+    },
+    "results": [
+      {
+        "task_id": "3d9a636_1",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false,
+        "bullets_used": 0
+      },
+      {
+        "task_id": "3d9a636_2",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false,
+        "bullets_used": 0
+      },
+      {
+        "task_id": "3d9a636_3",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false,
+        "bullets_used": 0
+      },
+      {
+        "task_id": "fd1f8fa_1",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false,
+        "bullets_used": 0
+      },
+      {
+        "task_id": "fd1f8fa_2",
+        "tgc": 0.0,
+        "sgc": 0.0,
+        "success": false,
+        "bullets_used": 0
+      }
+    ]
+  },
+  "improvements": {
+    "tgc": 0.0,
+    "sgc": 0.0
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "experiment_id": "20251027_002351",
+  "timestamp": "2025-10-27T00:23:51.349749",
+  "config": {
+    "max_samples": 100,
+    "max_epochs": 1,
+    "use_faiss": true,
+    "playbook_path": "/Users/speed/claude-code-plugin-marketplace/plugins/ace-context-engineering/skills/playbook.json",
+    "data_root": "/Users/speed/claude-code-plugin-marketplace/plugins/ace-context-engineering/benchmarks/data"
+  },
+  "train_samples": 90,
+  "initial_bullets": 5,
+  "results": {
+    "final_metrics": {
+      "total_tasks": 90,
+      "successful_tasks": 0,
+      "bullets_added": 3,
+      "bullets_updated": 450,
+      "success_rate": 0.0
+    },
+    "epochs": [
+      {
+        "epoch": 1,
+        "successes": 0,
+        "failures": 90,
+        "bullets_added": 3,
+        "bullets_updated": 450,
+        "success_rate": 0.0
+      }
+    ],
+    "final_bullets": 8,
+    "epoch_snapshots": [
+      {
+        "epoch": 1,
+        "path": "/Users/speed/claude-code-plugin-marketplace/plugins/ace-context-engineering/skills/playbook_epoch_1.json",
+        "timestamp": "2025-10-27T00:27:41.773994",
+        "num_bullets": 8
+      }
+    ]
+  }
+}

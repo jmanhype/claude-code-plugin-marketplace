@@ -1,0 +1,432 @@
+{
+  "version": "1.0.0",
+  "schema_version": "1.0.0",
+  "last_updated": "2025-10-25T00:00:00Z",
+  "bullets": [
+    {
+      "id": "bullet-2025-10-25-001",
+      "title": "Always read files before editing to avoid Edit tool failures",
+      "content": "The Edit tool requires that you read a file using the Read tool at least once in the conversation before attempting to edit it. This is a hard requirement that will cause the Edit tool to fail with an error if violated. Always use Read first, even if you think you know the file contents. This prevents accidental overwrites and ensures you have current context.",
+      "tags": [
+        "tool.edit",
+        "tool.read",
+        "antipattern",
+        "critical"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "Edit tool description",
+          "note": "Tool explicitly states: 'This tool will error if you attempt an edit without reading the file.'"
+        }
+      ],
+      "helpful_count": 32,
+      "harmful_count": 44,
+      "last_updated": "2025-10-26T20:52:27.700683",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-002",
+      "title": "Use specialized file tools instead of Bash commands for file operations",
+      "content": "For file operations, always prefer specialized tools: Read (not cat/head/tail), Edit (not sed/awk), Write (not echo >/heredoc), Glob (not find/ls), Grep (not grep/rg). Bash tools should be reserved for actual system commands and terminal operations. Specialized tools provide better error handling, progress tracking, and integrate with the context system.",
+      "tags": [
+        "tool.bash",
+        "tool.read",
+        "tool.edit",
+        "tool.write",
+        "tool.glob",
+        "tool.grep",
+        "best_practice"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "Bash tool description",
+          "note": "Explicitly states to avoid using bash for file operations and use specialized tools instead"
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-25T00:00:00Z",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [
+        "bullet-2025-10-25-001"
+      ],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-003",
+      "title": "Git push requires branch names starting with 'claude/' to avoid 403 errors",
+      "content": "When pushing to remote repositories in this environment, branch names MUST start with 'claude/' and end with the session ID, otherwise the push will fail with HTTP 403. Always verify branch name format before pushing. Use 'git push -u origin <branch-name>' for new branches. Retry up to 4 times with exponential backoff (2s, 4s, 8s, 16s) on network failures.",
+      "tags": [
+        "tool.bash",
+        "git.push",
+        "error_prevention",
+        "critical",
+        "project"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "Git Operations section",
+          "note": "Explicitly states: 'CRITICAL: the branch should start with 'claude/' and end with matching session id, otherwise push will fail with 403 http code.'"
+        }
+      ],
+      "helpful_count": 4,
+      "harmful_count": 7,
+      "last_updated": "2025-10-26T20:09:44.173304",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "project",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-004",
+      "title": "Use Task tool with Explore agent for codebase exploration, not direct Glob/Grep",
+      "content": "When exploring a codebase to understand how features work or answer 'how does X work' questions, use the Task tool with subagent_type='Explore' instead of running Glob/Grep directly. The Explore agent is specialized and optimized for discovery tasks. Specify thoroughness level: 'quick' for basic searches, 'medium' for moderate exploration, 'very thorough' for comprehensive analysis. This reduces context usage and provides better results.",
+      "tags": [
+        "tool.task",
+        "tool.glob",
+        "tool.grep",
+        "codebase_exploration",
+        "best_practice"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "Tool usage policies",
+          "note": "States to use Task tool when exploring codebase for context gathering"
+        }
+      ],
+      "helpful_count": 25,
+      "harmful_count": 2,
+      "last_updated": "2025-10-26T20:52:27.700677",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-005",
+      "title": "TodoWrite requires exactly ONE task in_progress at a time",
+      "content": "When using TodoWrite for task management, maintain exactly ONE task with status 'in_progress' at any given time. Mark tasks as 'in_progress' BEFORE starting work, and mark 'completed' IMMEDIATELY after finishing. Each task needs both 'content' (imperative form) and 'activeForm' (present continuous form). This discipline ensures clear progress tracking and prevents work fragmentation.",
+      "tags": [
+        "tool.todowrite",
+        "task_management",
+        "best_practice",
+        "critical"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "TodoWrite tool description",
+          "note": "Explicitly states: 'EXACTLY ONE task in_progress at any time (not less, not more)'"
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-25T00:00:00Z",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-006",
+      "title": "Validate JSON files before committing in plugin marketplace projects",
+      "content": "For plugin marketplace projects, always validate JSON files (metadata.json, marketplace.json) before committing. Use validation scripts if available. Common issues: missing required fields (name, version, description, author), invalid semantic versions, malformed JSON syntax, marketplace.json out of sync with plugin metadata. Run validation as part of pre-commit workflow.",
+      "tags": [
+        "domain.plugin_marketplace",
+        "validation",
+        "json",
+        "best_practice",
+        "project"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "projects/CLAUDE.md",
+          "note": "Project conventions emphasize validation before committing"
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-25T00:00:00Z",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "project",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-007",
+      "title": "Make parallel tool calls in single message when operations are independent",
+      "content": "When multiple tool calls have no dependencies between them, make ALL independent calls in a single message with multiple tool use blocks. This maximizes performance and reduces latency. For example, when reading multiple files, grepping different patterns, or running independent bash commands. Only make sequential calls when later calls depend on results from earlier ones. Never use placeholders or guess missing parameters.",
+      "tags": [
+        "tool.usage",
+        "performance",
+        "best_practice",
+        "critical"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "System prompt",
+          "note": "Repeatedly emphasizes: 'make multiple tool calls in parallel in a single message when operations are independent'"
+        }
+      ],
+      "helpful_count": 23,
+      "harmful_count": 25,
+      "last_updated": "2025-10-26T20:09:44.208720",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-008",
+      "title": "Progressive disclosure: read context.md first, then mandatory files, then task-specific",
+      "content": "Follow progressive disclosure when loading context: (1) Start with .claude/context/context.md for system overview, (2) Read the three mandatory files (memory/CLAUDE.md, projects/CLAUDE.md, tools/CLAUDE.md) before non-trivial work, (3) Load task-specific context only as needed. This balances having sufficient context without overwhelming the attention budget. Lazy load domain-specific files, schemas, and tool documentation only when required.",
+      "tags": [
+        "context.loading",
+        "progressive_disclosure",
+        "best_practice",
+        "ace"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "context.md",
+          "note": "Progressive Disclosure section outlines the loading strategy"
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-25T00:00:00Z",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-009",
+      "title": "Propose deltas not rewrites when updating ACE context",
+      "content": "When updating ACE context (bullets, playbooks, context files), always propose incremental delta updates rather than monolithic rewrites. Deltas should specify: new_bullets (additions), edits (modifications to existing), merges (deduplication), deprecations (obsolescence), and counters (effectiveness updates). This preserves history, prevents accidental loss of valuable heuristics, and makes changes reviewable. Get user sign-off for non-trivial deltas.",
+      "tags": [
+        "ace.delta",
+        "context.management",
+        "best_practice",
+        "critical"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "context.md ACE Playbook",
+          "note": "Core rule #1: 'No monolithic rewrites. Only propose localized edits via deltas.'"
+        }
+      ],
+      "helpful_count": 12,
+      "harmful_count": 12,
+      "last_updated": "2025-10-26T20:02:01.666591",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-010",
+      "title": "Grep requires exact escaping of literal braces for Go/Rust interface syntax",
+      "content": "When searching for code with literal braces (e.g., Go's 'interface{}', Rust's 'struct {}'), you must escape the braces in Grep patterns because it uses ripgrep (not grep) syntax. Use 'interface\\{\\}' to find 'interface{}'. Also note: Grep matches single lines by default; use multiline: true for patterns that span lines. Common error: forgetting to escape causes pattern to match nothing.",
+      "tags": [
+        "tool.grep",
+        "regex",
+        "edge_case",
+        "go",
+        "rust"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "Grep tool description",
+          "note": "States: 'Pattern syntax: Uses ripgrep (not grep) - literal braces need escaping'"
+        }
+      ],
+      "helpful_count": 0,
+      "harmful_count": 0,
+      "last_updated": "2025-10-25T00:00:00Z",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-011",
+      "title": "Only commit to git when explicitly requested by user",
+      "content": "NEVER create git commits unless the user explicitly requests it. This is a critical safety rule. Users feel violated when you proactively commit without asking. When the user does request a commit: (1) run git status, git diff, git log in parallel, (2) draft a commit message focusing on 'why' not 'what', (3) use heredoc format for the message, (4) include Claude Code attribution, (5) run git status after to verify. Handle pre-commit hook failures by checking if safe to amend (verify authorship and not pushed).",
+      "tags": [
+        "tool.bash",
+        "git.commit",
+        "safety",
+        "critical",
+        "user_trust"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "Git commit policy",
+          "note": "States: 'Only create commits when requested by the user' and 'NEVER commit changes unless the user explicitly asks you to'"
+        }
+      ],
+      "helpful_count": 24,
+      "harmful_count": 27,
+      "last_updated": "2025-10-26T20:09:43.985617",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [
+        "bullet-2025-10-25-003"
+      ],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "bullet-2025-10-25-012",
+      "title": "Edit tool requires preserving exact indentation after line number prefix",
+      "content": "When using Edit tool with content from Read output, preserve exact indentation as it appears AFTER the line number prefix. The Read output format is: spaces + line number + tab + actual file content. Everything after that tab is what matters for matching. Never include any part of the line number prefix in old_string or new_string. Common error: copying indentation from before the tab causes match failures.",
+      "tags": [
+        "tool.edit",
+        "tool.read",
+        "formatting",
+        "edge_case",
+        "critical"
+      ],
+      "evidence": [
+        {
+          "type": "documentation",
+          "ref": "Edit tool description",
+          "note": "States: 'ensure you preserve the exact indentation (tabs/spaces) as it appears AFTER the line number prefix'"
+        }
+      ],
+      "helpful_count": 21,
+      "harmful_count": 29,
+      "last_updated": "2025-10-26T20:52:27.700684",
+      "created": "2025-10-25T00:00:00Z",
+      "links": [
+        "bullet-2025-10-25-001"
+      ],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [
+        "bullet-2025-10-25-001"
+      ],
+      "author": "agent",
+      "status": "active"
+    },
+    {
+      "id": "gepa-api_error-20251026-130801",
+      "title": "Handle API errors gracefully",
+      "content": "When calling external APIs, always check response status and handle errors appropriately. Implement retry logic for transient failures.",
+      "tags": [
+        "gepa",
+        "api_error",
+        "error_handling"
+      ],
+      "evidence": [
+        "test-001"
+      ],
+      "links": [],
+      "confidence": "medium",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "gepa",
+      "status": "active",
+      "helpful_count": 0,
+      "harmful_count": 0
+    },
+    {
+      "id": "cheatsheet-email_send-20251026-130801",
+      "title": "Email sending pattern",
+      "content": "Sending emails: (1) Validate recipient address, (2) Compose subject and body, (3) Add attachments if needed, (4) Send via Gmail API.",
+      "tags": [
+        "cheatsheet",
+        "email_send",
+        "success_pattern"
+      ],
+      "evidence": [
+        "test-002"
+      ],
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "cheatsheet",
+      "status": "active",
+      "helpful_count": 29,
+      "harmful_count": 2,
+      "last_updated": "2025-10-26T20:52:27.700680"
+    },
+    {
+      "id": "cheatsheet-venmo_friend_ops-20251026-130801",
+      "title": "Venmo friend management pattern",
+      "content": "Managing Venmo friends: (1) Get current friend list from Venmo, (2) Compare with target source (contacts/phone), (3) Add missing friends, (4) Remove extra friends.",
+      "tags": [
+        "cheatsheet",
+        "venmo_friend_ops",
+        "success_pattern"
+      ],
+      "evidence": [
+        "test-003"
+      ],
+      "links": [],
+      "confidence": "high",
+      "scope": "global",
+      "prerequisites": [],
+      "author": "cheatsheet",
+      "status": "active",
+      "helpful_count": 29,
+      "harmful_count": 2,
+      "last_updated": "2025-10-26T20:52:27.700682"
+    }
+  ],
+  "metadata": {
+    "total_bullets": 15,
+    "active_bullets": 15,
+    "deprecated_bullets": 0,
+    "archived_bullets": 0,
+    "last_curated": "2025-10-26T20:52:27.700691"
+  }
+}
