@@ -311,107 +311,144 @@ class Reflector:
         """
         Generate AppWorld-specific bullet from rich error analysis.
 
-        Uses error_type, failed_apis, missing_patterns, and suggested_fixes
-        to create domain-specific bullets.
+        Now uses the reflect-appworld-failure Claude Code OS skill for
+        LLM-powered semantic analysis instead of hardcoded templates.
         """
-        error_type = error_analysis.get('error_type')
-        missing_patterns = error_analysis.get('missing_patterns', [])
-        suggested_fixes = error_analysis.get('suggested_fixes', [])
-        failed_apis = error_analysis.get('failed_apis', [])
-
         print(f"\n🔍 DEBUG _generate_appworld_bullet:")
-        print(f"   error_type={error_type}")
-        print(f"   missing_patterns={missing_patterns}")
-        print(f"   suggested_fixes={suggested_fixes}")
-        print(f"   failed_apis={failed_apis}")
+        print(f"   error_type={error_analysis.get('error_type')}")
+        print(f"   missing_patterns={error_analysis.get('missing_patterns', [])}")
+        print(f"   suggested_fixes={error_analysis.get('suggested_fixes', [])}")
 
+        error_type = error_analysis.get('error_type')
         if not error_type:
             print(f"   ❌ No error_type, returning None")
             return None
 
-        # Extract app name from instruction or failed APIs
+        # Build skill prompt with error details
+        instruction = sample.get('instruction', '')
+        apps = sample.get('apps', [])
+        error_messages = error_analysis.get('error_messages', [])
+        failed_code = error_analysis.get('failed_code', '')
+        missing_patterns = error_analysis.get('missing_patterns', [])
+        suggested_fixes = error_analysis.get('suggested_fixes', [])
+
+        # Format prompt for reflect-appworld-failure skill
+        skill_prompt = f"""# Task
+{instruction}
+
+## Apps
+{', '.join(apps)}
+
+## Error Type
+{error_type}
+
+## Error Messages
+{chr(10).join(f'- {msg}' for msg in error_messages)}
+
+## Failed Code Snippet
+{failed_code or 'No code snippet available'}
+
+## Missing Patterns (from heuristics)
+{chr(10).join(f'- {pattern}' for pattern in missing_patterns) if missing_patterns else 'None identified'}
+
+## Suggested Fixes (from heuristics)
+{chr(10).join(f'- {fix}' for fix in suggested_fixes) if suggested_fixes else 'None identified'}
+"""
+
+        print(f"   🎯 Invoking reflect-appworld-failure skill...")
+        print(f"   Prompt length: {len(skill_prompt)} chars")
+
+        try:
+            # Import skill invoker from same utils directory
+            from . import claude_code_skill_invoker as skill_invoker
+            import json
+
+            # Invoke skill (uses Claude Code OS for semantic analysis)
+            print(f"   🤖 Calling Claude CLI with reflect-appworld-failure skill...")
+            response = skill_invoker.invoke_skill("reflect-appworld-failure", skill_prompt)
+            print(f"   ✅ LLM-powered reflection successful ({len(response)} chars)")
+
+            # Parse JSON response (handle markdown code fences)
+            try:
+                # Strip markdown code fences if present
+                response_clean = response.strip()
+                if response_clean.startswith('```json'):
+                    # Remove opening fence
+                    response_clean = response_clean[7:]  # len('```json') = 7
+                    # Remove closing fence
+                    if response_clean.endswith('```'):
+                        response_clean = response_clean[:-3]
+                    response_clean = response_clean.strip()
+                elif response_clean.startswith('```'):
+                    # Generic code fence
+                    response_clean = response_clean[3:]
+                    if response_clean.endswith('```'):
+                        response_clean = response_clean[:-3]
+                    response_clean = response_clean.strip()
+
+                result = json.loads(response_clean)
+                bullet = result.get('bullet')
+
+                if bullet:
+                    print(f"   ✅ RETURNING LLM-GENERATED BULLET: id={bullet.get('id')}, title={bullet.get('title', '')[:40]}...")
+                    return bullet
+                else:
+                    print(f"   ❌ LLM response missing 'bullet' key")
+                    return self._generate_appworld_bullet_fallback(sample, error_analysis)
+
+            except json.JSONDecodeError as e:
+                print(f"   ❌ JSON parse error: {e}")
+                print(f"   Response preview: {response[:200]}...")
+                print(f"   🔧 Attempting fallback...")
+                return self._generate_appworld_bullet_fallback(sample, error_analysis)
+
+        except Exception as e:
+            print(f"   ⚠️  Skill invocation failed: {e}")
+            print(f"   📦 Falling back to template-based generation")
+            return self._generate_appworld_bullet_fallback(sample, error_analysis)
+
+    def _generate_appworld_bullet_fallback(
+        self,
+        sample: Dict,
+        error_analysis: Dict
+    ) -> Optional[Dict]:
+        """
+        Fallback bullet generation using templates (old heuristic approach).
+
+        Used when skill invocation fails.
+        """
+        error_type = error_analysis.get('error_type')
+        missing_patterns = error_analysis.get('missing_patterns', [])
+        suggested_fixes = error_analysis.get('suggested_fixes', [])
+
+        if not error_type:
+            return None
+
+        # Extract app name
         instruction = sample.get('instruction', '')
         apps = sample.get('apps', [])
         app_name = apps[0] if apps else None
 
-        # Generate unique bullet ID
+        # Generate bullet ID
         timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
         bullet_id = f"bullet-{timestamp}"
 
-        # Generate bullet based on error type
-        if error_type == 'authentication_error':
-            title = f"Always authenticate before using {app_name or 'app'} APIs"
-            content = f"When using {app_name or 'app'} APIs, always call the login() method first to obtain an access token before making any other API calls. "
-            if missing_patterns:
-                content += f"Common mistake: {missing_patterns[0]}. "
-            content += "Example: token = app.login(username, password); result = app.search(token, query)"
-            tags = ['authentication', 'api', 'best_practice']
-            if app_name:
-                tags.append(f'app.{app_name}')
-
-        elif error_type == 'api_misuse':
-            title = f"Use correct API method names for {app_name or 'app'}"
-            content = "API method names must match the available endpoints exactly. "
-            if suggested_fixes:
-                content += f"Tip: {suggested_fixes[0]}. "
-            if failed_apis:
-                content += f"Failed APIs: {', '.join(failed_apis)}. "
-            content += "Check API documentation for correct method names (e.g., search_tracks not get_tracks)."
-            tags = ['api', 'method_names', 'debugging']
-            if app_name:
-                tags.append(f'app.{app_name}')
-
-        elif error_type == 'missing_data':
-            title = "Check API response structure before accessing nested fields"
-            content = "Always verify that API response contains expected fields before accessing them to avoid NoneType errors. "
-            if missing_patterns:
-                content += f"Common issue: {missing_patterns[0]}. "
-            content += "Use .get() method for safe access: data.get('field', default_value) or check 'if key in dict' first."
-            tags = ['api', 'error_handling', 'data_parsing', 'best_practice']
-            if app_name:
-                tags.append(f'app.{app_name}')
-
-        elif error_type == 'logic_error':
-            print(f"   📍 Handling logic_error...")
-            # For logic errors, extract patterns from missing_patterns
-            # Don't require missing_patterns - use error context instead
-            if missing_patterns:
-                print(f"   ✅ Has missing_patterns, creating specific bullet")
-                title = f"Verify {app_name or 'app'} API logic and requirements"
-                content = f"When implementing {app_name or 'app'} operations: "
-                content += '; '.join(missing_patterns)
-                if suggested_fixes:
-                    content += f". Suggested approach: {'; '.join(suggested_fixes)}"
-            else:
-                print(f"   ⚠️  No missing_patterns, creating generic bullet")
-                # Generic logic error bullet from instruction context
-                title = f"Review {app_name or 'task'} implementation logic"
-                content = f"Task instruction: {instruction[:150]}. Review implementation to ensure all requirements are met."
-                if suggested_fixes:
-                    content += f" Suggested fixes: {'; '.join(suggested_fixes)}"
-
+        # Simple template-based generation
+        if error_type == 'logic_error' and missing_patterns:
+            title = f"Verify {app_name or 'app'} API logic and requirements"
+            content = f"When implementing {app_name or 'app'} operations: "
+            content += '; '.join(missing_patterns)
             tags = ['logic', 'debugging', 'api']
             if app_name:
                 tags.append(f'app.{app_name}')
-            print(f"   ✅ Generated bullet with title: {title[:50]}...")
-
         else:
-            # Unknown error type, try to build generic bullet from patterns
-            if not missing_patterns and not suggested_fixes:
-                return None
-
-            title = f"Handle {error_type} when using {app_name or 'app'}"
-            content = ""
-            if missing_patterns:
-                content += f"Missing: {'; '.join(missing_patterns)}. "
-            if suggested_fixes:
-                content += f"Fix: {'; '.join(suggested_fixes)}."
-            tags = ['api', 'debugging']
+            title = f"Review {app_name or 'task'} implementation logic"
+            content = f"Task instruction: {instruction[:150]}. Review implementation to ensure all requirements are met."
+            tags = ['logic', 'debugging']
             if app_name:
                 tags.append(f'app.{app_name}')
 
-        # Build complete bullet
-        bullet = {
+        return {
             'id': bullet_id,
             'title': title,
             'content': content,
@@ -419,21 +456,19 @@ class Reflector:
             'evidence': [{
                 'type': 'execution',
                 'ref': sample.get('id', 'unknown'),
-                'note': f"Task failed with {error_type}: {error_analysis.get('root_cause', 'unknown error')}"
+                'note': f"Task failed with {error_type}"
             }],
             'helpful_count': 0,
             'harmful_count': 0,
-            'confidence': 'medium',
+            'confidence': 'low',
             'scope': 'app' if app_name else 'global',
             'prerequisites': [],
-            'author': 'reflector',
+            'author': 'reflector_fallback',
             'status': 'active',
             'created': datetime.now().isoformat(),
             'last_updated': datetime.now().isoformat(),
             'links': []
         }
-        print(f"   ✅ RETURNING BULLET: id={bullet_id}, title={title[:40]}...")
-        return bullet
 
     def _propose_new_bullets(
         self,

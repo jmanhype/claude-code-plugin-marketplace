@@ -1,150 +1,293 @@
 """
-Claude Code Skill Invoker
+Claude Code Skill Invoker (OAuth2 gateway edition)
 
-Helper module to invoke Claude Code Skills programmatically.
+Invokes Claude Code skills via an Anthropic-compatible OAuth2 gateway using
+the shared skill instructions stored in SKILL.md files.
 """
 
-import subprocess
-import tempfile
+from __future__ import annotations
+
+import json
+import os
+import re
+import time
 from pathlib import Path
+from typing import List, Optional
+
+try:
+    from .anthropic_oauth_client import ClaudeOAuth2LLMClient, build_oauth_client_from_env
+except ImportError:  # fallback when imported outside package context
+    from anthropic_oauth_client import ClaudeOAuth2LLMClient, build_oauth_client_from_env
+
+# Lazily-initialised OAuth client (shared across invocations)
+_LLM_CLIENT: Optional[ClaudeOAuth2LLMClient] = None
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
 
 
 def invoke_skill(skill_name: str, prompt: str) -> str:
     """
-    Invoke a Claude Code Skill and return the response.
-
-    Args:
-        skill_name: Name of the skill (e.g., "generate-appworld-code")
-        prompt: Input prompt for the skill
-
-    Returns:
-        Skill response as string
-
-    Raises:
-        RuntimeError: If skill invocation fails
+    Invoke a named Claude Code skill using the OAuth2 LLM client.
     """
-    # For now, use a simple approach that delegates to the Skill's logic
-    # In a full implementation, this would invoke Claude Code's skill system
+    print(f"\n{'='*80}")
+    print("🎯 REAL SKILL INVOCATION")
+    print(f"{'='*80}")
+    print(f"Skill: {skill_name}")
+    print("Method: OAuth2 gateway with skill context")
+    print(f"Prompt length: {len(prompt)} chars")
+    print(f"{'='*80}\n")
 
-    if skill_name == "generate-appworld-code":
-        return invoke_generate_appworld_code_skill(prompt)
+    if skill_name == "curate-delta":
+        response = _invoke_with_retry(skill_name, prompt, max_retries=2)
     else:
-        raise ValueError(f"Unknown skill: {skill_name}")
+        response = _invoke_with_retry(skill_name, prompt, max_retries=0)
+
+    print(f"✅ LLM-powered generation successful ({len(response)} chars)")
+    return response
+
+
+def _invoke_with_retry(skill_name: str, prompt: str, max_retries: int) -> str:
+    last_error: Optional[Exception] = None
+
+    for attempt in range(max_retries + 1):
+        try:
+            if attempt > 0:
+                wait = 2 ** attempt
+                print(f"   ⏳ Retry {attempt}/{max_retries} after {wait}s delay...")
+                time.sleep(wait)
+
+            return _invoke_via_llm(skill_name, prompt)
+
+        except RuntimeError as exc:
+            last_error = exc
+            error_msg = str(exc).lower()
+            if "timeout" in error_msg and attempt < max_retries:
+                print("   ⚠️  Invocation timed out; retrying...")
+                continue
+            raise
+
+    raise RuntimeError(f"All retries exhausted. Last error: {last_error}")
+
+
+def _invoke_via_llm(
+    skill_name: str,
+    prompt: str,
+    *,
+    enforce_json: bool = False,
+    original_prompt: Optional[str] = None,
+) -> str:
+    """
+    Invoke the skill through the OAuth-backed LLM client.
+    """
+    skill_path = _find_skill_path(skill_name)
+    skill_instructions = _extract_skill_instructions(skill_path.read_text())
+
+    base_prompt = original_prompt or prompt
+    llm = _get_llm_client()
+
+    response = llm.complete(
+        prompt,
+        system=skill_instructions,
+        max_tokens=_max_tokens_for_skill(skill_name),
+    ).text.strip()
+
+    if not response:
+        raise RuntimeError("Claude returned empty response")
+
+    if skill_name == "curate-delta":
+        json_payload = _extract_json_from_response(response)
+        if json_payload:
+            return json_payload
+
+        if not enforce_json:
+            print("⚠️  LLM returned non-JSON response; reissuing with strict JSON reminder...")
+            strict_prompt = (
+                f"{prompt}\n\n"
+                "REMINDER: Output ONLY the JSON object defined in the skill documentation. "
+                "No commentary, no prefixes, no markdown fences."
+            )
+            return _invoke_via_llm(
+                skill_name,
+                strict_prompt,
+                enforce_json=True,
+                original_prompt=base_prompt,
+            )
+
+        raise RuntimeError(
+            f"Skill {skill_name} did not return valid JSON after reinforcement. "
+            f"Response: {response[:500]}"
+        )
+
+    return response
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _get_llm_client() -> ClaudeOAuth2LLMClient:
+    global _LLM_CLIENT
+    if _LLM_CLIENT is None:
+        _LLM_CLIENT = build_oauth_client_from_env()
+    return _LLM_CLIENT
+
+
+def _max_tokens_for_skill(skill_name: str) -> int:
+    if skill_name == "generate-appworld-code":
+        return 2048
+    if skill_name == "curate-delta":
+        return 1024
+    if skill_name == "reflect-appworld-failure":
+        return 768
+    return 1024
+
+
+def _find_skill_path(skill_name: str) -> Path:
+    base_dir = Path(__file__).resolve().parents[2]  # plugins/ace-context-engineering
+    candidates = [
+        base_dir / "skills" / skill_name / "SKILL.md",
+        Path.cwd() / "plugins" / "ace-context-engineering" / "skills" / skill_name / "SKILL.md",
+        Path.cwd() / "skills" / skill_name / "SKILL.md",
+    ]
+
+    for path in candidates:
+        if path.exists():
+            return path
+
+    raise FileNotFoundError(
+        f"Skill '{skill_name}' not found. Tried: {', '.join(str(p) for p in candidates)}"
+    )
+
+
+def _extract_skill_instructions(skill_content: str) -> str:
+    if skill_content.startswith("---"):
+        parts = skill_content.split("---", 2)
+        if len(parts) >= 3:
+            return parts[2].strip()
+    return skill_content.strip()
+
+
+def _extract_json_from_response(response: str) -> Optional[str]:
+    cleaned = response.strip()
+
+    # Strip markdown fences
+    if cleaned.startswith("```json"):
+        cleaned = cleaned[7:]
+        if cleaned.endswith("```"):
+            cleaned = cleaned[:-3]
+        cleaned = cleaned.strip()
+    elif cleaned.startswith("```"):
+        cleaned = cleaned[3:]
+        if cleaned.endswith("```"):
+            cleaned = cleaned[:-3]
+        cleaned = cleaned.strip()
+
+    if cleaned.startswith("{") or cleaned.startswith("["):
+        try:
+            json.loads(cleaned)
+            return cleaned
+        except json.JSONDecodeError:
+            pass
+
+    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+    if match:
+        candidate = match.group()
+        try:
+            json.loads(candidate)
+            return candidate
+        except json.JSONDecodeError:
+            return None
+
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Fallback implementations (used if API invocation fails hard)
+# ---------------------------------------------------------------------------
 
 
 def invoke_generate_appworld_code_skill(prompt: str) -> str:
     """
-    Generate AppWorld code using the generate-appworld-code Skill's logic.
-
-    This implements the core logic of the Skill inline for the interactive protocol.
+    Fallback generate-appworld-code skill implementation.
     """
-    import json
-    import re
-
-    # Parse the prompt to extract task details
-    lines = prompt.split('\n')
+    lines = prompt.split("\n")
     instruction = ""
-    apps = []
-    strategies = []
+    apps: List[str] = []
+    strategies: List[str] = []
 
-    for i, line in enumerate(lines):
-        if line.startswith('# Task'):
-            # Next non-empty line is the instruction
-            for j in range(i+1, len(lines)):
-                if lines[j].strip():
-                    instruction = lines[j].strip()
+    for idx, line in enumerate(lines):
+        if line.startswith("# Task"):
+            for nxt in range(idx + 1, len(lines)):
+                if lines[nxt].strip():
+                    instruction = lines[nxt].strip()
                     break
-
-        elif line.startswith('## Available Apps'):
-            # Next non-empty line has apps
-            for j in range(i+1, len(lines)):
-                if lines[j].strip() and not lines[j].startswith('##'):
-                    apps = [app.strip() for app in lines[j].split(',')]
+        elif line.startswith("## Available Apps"):
+            for nxt in range(idx + 1, len(lines)):
+                if lines[nxt].strip() and not lines[nxt].startswith("##"):
+                    apps = [app.strip() for app in lines[nxt].split(",")]
                     break
-
-        elif line.startswith('## Strategies from Playbook'):
-            # Collect strategies
-            for j in range(i+1, len(lines)):
-                if lines[j].startswith('##'):
+        elif line.startswith("## Strategies from Playbook"):
+            for nxt in range(idx + 1, len(lines)):
+                if lines[nxt].startswith("##"):
                     break
-                if lines[j].strip().startswith('-'):
-                    strategies.append(lines[j].strip()[2:])  # Remove '- '
+                if lines[nxt].strip().startswith("-"):
+                    strategies.append(lines[nxt].strip()[2:])
 
-    # Generate code based on task
-    code = generate_appworld_code(instruction, apps, strategies)
-    return code
+    return generate_appworld_code(instruction, apps, strategies)
 
 
-def generate_appworld_code(instruction: str, apps: list, strategies: list) -> str:
-    """
-    Generate AppWorld Python code for a task.
+def generate_appworld_code(instruction: str, apps: List[str], strategies: List[str]) -> str:
+    primary_app = apps[0] if apps and apps[0] != "general" else None
 
-    Args:
-        instruction: Task instruction
-        apps: List of available apps (e.g., ['spotify', 'gmail'])
-        strategies: List of strategy hints from playbook
-
-    Returns:
-        Python code string
-    """
-    # Determine primary app
-    primary_app = apps[0] if apps and apps[0] != 'general' else None
-
-    if not primary_app or primary_app == 'general':
-        # Generic task - try to infer from instruction
+    if not primary_app or primary_app == "general":
         instruction_lower = instruction.lower()
-        if 'spotify' in instruction_lower or 'song' in instruction_lower or 'playlist' in instruction_lower:
-            primary_app = 'spotify'
-        elif 'email' in instruction_lower or 'gmail' in instruction_lower:
-            primary_app = 'gmail'
-        elif 'venmo' in instruction_lower or 'payment' in instruction_lower:
-            primary_app = 'venmo'
-        elif 'calendar' in instruction_lower or 'event' in instruction_lower:
-            primary_app = 'calendar'
-        elif 'contact' in instruction_lower:
-            primary_app = 'contacts'
+        if any(token in instruction_lower for token in ("spotify", "song", "playlist")):
+            primary_app = "spotify"
+        elif any(token in instruction_lower for token in ("gmail", "email")):
+            primary_app = "gmail"
+        elif any(token in instruction_lower for token in ("venmo", "payment")):
+            primary_app = "venmo"
+        elif any(token in instruction_lower for token in ("calendar", "event")):
+            primary_app = "calendar"
+        elif "contact" in instruction_lower:
+            primary_app = "contacts"
 
-    # Generate app-specific code
-    if primary_app == 'spotify':
+    if primary_app == "spotify":
         return generate_spotify_code(instruction, strategies)
-    elif primary_app == 'gmail':
+    if primary_app == "gmail":
         return generate_gmail_code(instruction, strategies)
-    elif primary_app == 'venmo':
+    if primary_app == "venmo":
         return generate_venmo_code(instruction, strategies)
-    elif primary_app == 'calendar':
+    if primary_app == "calendar":
         return generate_calendar_code(instruction, strategies)
-    elif primary_app == 'contacts':
+    if primary_app == "contacts":
         return generate_contacts_code(instruction, strategies)
-    else:
-        # Generic fallback
-        return generate_generic_code(instruction, primary_app or 'unknown', strategies)
+
+    return generate_generic_code(instruction, primary_app or "unknown", strategies)
 
 
-def generate_spotify_code(instruction: str, strategies: list) -> str:
-    """Generate Spotify-specific code."""
+def generate_spotify_code(instruction: str, strategies: List[str]) -> str:
     instruction_lower = instruction.lower()
 
-    # Detect task type
-    if 'most-liked' in instruction_lower or 'most liked' in instruction_lower:
-        aggregation = 'max'
-        metric = 'likes'
-    elif 'least-played' in instruction_lower or 'least played' in instruction_lower:
-        aggregation = 'min'
-        metric = 'play_count'
-    elif 'most-played' in instruction_lower or 'most played' in instruction_lower:
-        aggregation = 'max'
-        metric = 'play_count'
+    if "most-liked" in instruction_lower or "most liked" in instruction_lower:
+        aggregation, metric = "max", "likes"
+    elif "least-played" in instruction_lower or "least played" in instruction_lower:
+        aggregation, metric = "min", "play_count"
+    elif "most-played" in instruction_lower or "most played" in instruction_lower:
+        aggregation, metric = "max", "play_count"
     else:
-        aggregation = 'max'
-        metric = 'likes'
+        aggregation, metric = "max", "likes"
 
-    # Detect source
-    if 'playlist' in instruction_lower:
-        source = 'playlists'
-    elif 'album' in instruction_lower:
-        source = 'albums'
+    if "playlist" in instruction_lower:
+        source = "playlists"
+    elif "album" in instruction_lower:
+        source = "albums"
     else:
-        source = 'library'
+        source = "library"
 
     code = f'''# Spotify task: {instruction}
 # Applying strategies: {", ".join(strategies) if strategies else "None"}
@@ -155,14 +298,10 @@ try:
     token = response["access_token"]
 
     all_songs = []
+'''
 
-    '''
-
-    if source == 'playlists':
-        code += '''    # Get all playlists
-    playlists = apis.spotify.show_playlist_library(access_token=token)
-
-    # Collect songs from all playlists
+    if source == "playlists":
+        code += '''    playlists = apis.spotify.show_playlist_library(access_token=token)
     for playlist in playlists:
         songs = apis.spotify.show_playlist_songs(
             access_token=token,
@@ -170,11 +309,8 @@ try:
         )
         all_songs.extend(songs)
 '''
-    elif source == 'albums':
-        code += '''    # Get all albums
-    albums = apis.spotify.show_album_library(access_token=token)
-
-    # Collect songs from all albums
+    elif source == "albums":
+        code += '''    albums = apis.spotify.show_album_library(access_token=token)
     for album in albums:
         songs = apis.spotify.show_album_songs(
             access_token=token,
@@ -183,153 +319,116 @@ try:
         all_songs.extend(songs)
 '''
     else:
-        code += '''    # Get all songs from library
-    all_songs = apis.spotify.show_song_library(access_token=token)
+        code += '''    all_songs = apis.spotify.show_song_library(access_token=token)
 '''
 
-    if aggregation == 'max':
+    if aggregation == "max":
         code += f'''
-    # Find song with highest {metric}
     target_song = max(all_songs, key=lambda s: s.get("{metric}", 0))
     result = target_song["title"]
 '''
     else:
         code += f'''
-    # Find song with lowest {metric}
     target_song = min(all_songs, key=lambda s: s.get("{metric}", float('inf')))
     result = target_song["title"]
 '''
 
     code += '''
-    # Complete task
     apis.supervisor.complete_task()
 
 except Exception as e:
     print(f"Error: {str(e)}")
     raise
 '''
-
     return code
 
 
-def generate_gmail_code(instruction: str, strategies: list) -> str:
-    """Generate Gmail-specific code."""
-    code = f'''# Gmail task: {instruction}
+def generate_gmail_code(instruction: str, strategies: List[str]) -> str:
+    return f'''# Gmail task: {instruction}
 # Applying strategies: {", ".join(strategies) if strategies else "None"}
 
 try:
-    # Login to Gmail
     response = apis.gmail.login(username="user@example.com", password="password")
     token = response["access_token"]
 
-    # Fetch emails
     emails = apis.gmail.fetch_emails(
         access_token=token,
         max_results=50,
         query="is:all"
     )
 
-    # Process emails
     result = f"Found {{len(emails)}} emails"
-
-    # Complete task
     apis.supervisor.complete_task()
 
 except Exception as e:
     print(f"Error: {{str(e)}}")
     raise
 '''
-    return code
 
 
-def generate_venmo_code(instruction: str, strategies: list) -> str:
-    """Generate Venmo-specific code."""
-    code = f'''# Venmo task: {instruction}
+def generate_venmo_code(instruction: str, strategies: List[str]) -> str:
+    return f'''# Venmo task: {instruction}
 # Applying strategies: {", ".join(strategies) if strategies else "None"}
 
 try:
-    # Login to Venmo
     response = apis.venmo.login(username="user@example.com", password="password")
     token = response["access_token"]
 
-    # Get friends
     friends = apis.venmo.show_friends(access_token=token)
-
-    # Process friends
     result = f"Found {{len(friends)}} friends"
-
-    # Complete task
     apis.supervisor.complete_task()
 
 except Exception as e:
     print(f"Error: {{str(e)}}")
     raise
 '''
-    return code
 
 
-def generate_calendar_code(instruction: str, strategies: list) -> str:
-    """Generate Calendar-specific code."""
-    code = f'''# Calendar task: {instruction}
+def generate_calendar_code(instruction: str, strategies: List[str]) -> str:
+    return f'''# Calendar task: {instruction}
 # Applying strategies: {", ".join(strategies) if strategies else "None"}
 
 try:
-    # Get calendar events
     events = apis.calendar.show_events(
         start_date="2025-01-01",
         end_date="2025-12-31"
     )
 
-    # Process events
     result = f"Found {{len(events)}} events"
-
-    # Complete task
     apis.supervisor.complete_task()
 
 except Exception as e:
     print(f"Error: {{str(e)}}")
     raise
 '''
-    return code
 
 
-def generate_contacts_code(instruction: str, strategies: list) -> str:
-    """Generate Contacts-specific code."""
-    code = f'''# Contacts task: {instruction}
+def generate_contacts_code(instruction: str, strategies: List[str]) -> str:
+    return f'''# Contacts task: {instruction}
 # Applying strategies: {", ".join(strategies) if strategies else "None"}
 
 try:
-    # Get contacts
     contacts = apis.contacts.show_contacts()
-
-    # Process contacts
     result = f"Found {{len(contacts)}} contacts"
-
-    # Complete task
     apis.supervisor.complete_task()
 
 except Exception as e:
     print(f"Error: {{str(e)}}")
     raise
 '''
-    return code
 
 
-def generate_generic_code(instruction: str, app: str, strategies: list) -> str:
-    """Generate generic fallback code."""
-    code = f'''# Generic task: {instruction}
+def generate_generic_code(instruction: str, app: str, strategies: List[str]) -> str:
+    return f'''# Generic task: {instruction}
 # App: {app}
 # Applying strategies: {", ".join(strategies) if strategies else "None"}
 
 try:
     # TODO: Implement task-specific logic
     result = "Task completed (generic implementation)"
-
-    # Complete task
     apis.supervisor.complete_task()
 
 except Exception as e:
     print(f"Error: {{str(e)}}")
     raise
 '''
-    return code

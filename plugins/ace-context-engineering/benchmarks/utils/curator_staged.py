@@ -21,7 +21,10 @@ try:
     FAISS_AVAILABLE = True
 except ImportError:
     print("⚠️  FAISS not available, falling back to TF-IDF (not recommended)")
-    from .embeddings import EmbeddingsDeduplicator
+    try:
+        from .embeddings import EmbeddingsDeduplicator
+    except ImportError:
+        from embeddings import EmbeddingsDeduplicator
     FAISS_AVAILABLE = False
 
 
@@ -104,12 +107,18 @@ class StagedCurator:
         with open(self.playbook_path, 'w', encoding='utf-8') as f:
             json.dump(self.playbook, f, indent=2)
 
-    def curate_delta(self, delta: Dict[str, Any]) -> CurationResult:
+    def curate_delta(self, delta: Dict[str, Any], sample: Optional[Dict] = None, execution_feedback: Optional[Dict] = None) -> CurationResult:
         """
-        Curate delta through three quality-gated stages.
+        Curate delta through LLM synthesis + three quality-gated stages.
+
+        This implements the ACE paper's two-phase Curator architecture:
+        Phase 1: LLM synthesizes Reflector output into structured delta
+        Phase 2: Three-stage quality gates (structural, quality, approval)
 
         Args:
             delta: Delta proposal from Reflector
+            sample: Optional task sample metadata (for LLM-based synthesis)
+            execution_feedback: Optional execution feedback (for LLM-based synthesis)
 
         Returns:
             CurationResult with stage, pass/fail, and clean delta if approved
@@ -117,10 +126,22 @@ class StagedCurator:
         result = CurationResult()
 
         print(f"\n{'='*60}")
-        print(f"CURATOR: Three-Stage Quality Gate Processing")
+        print(f"CURATOR: LLM Synthesis + Three-Stage Quality Gate Processing")
         print(f"{'='*60}")
 
-        # STAGE 1: STRUCTURAL VALIDATION
+        # PHASE 1: LLM-based delta synthesis (optional, if sample provided)
+        if sample and execution_feedback:
+            print(f"\n🎯 Phase 1: LLM-based Delta Synthesis")
+            synthesized_delta = self._synthesize_delta_with_llm(delta, sample, execution_feedback)
+            if synthesized_delta:
+                delta = synthesized_delta
+                result.curation_notes.append("LLM-based delta synthesis applied")
+                print(f"   ✅ Using LLM-synthesized delta")
+            else:
+                result.curation_notes.append("Using original Reflector delta (LLM synthesis failed)")
+                print(f"   ⚠️  LLM synthesis failed, using original delta")
+
+        # PHASE 2: Three-stage quality gates
         print(f"\n📋 Stage 1: Structural Validation")
         result.current_stage = CurationStage.STRUCTURAL_VALIDATION
 
@@ -244,12 +265,23 @@ class StagedCurator:
             if not isinstance(bullet.get('tags', []), list):
                 errors.append(f"Bullet {bullet.get('id')} has invalid tags (not list)")
 
-        # Validate counters structure
-        for counter in delta.get('counters', []):
-            if not counter.get('id'):
-                errors.append(f"Counter missing bullet id")
-            if 'helpful_delta' not in counter and 'harmful_delta' not in counter:
-                errors.append(f"Counter {counter.get('id')} has no delta values")
+        # Validate counters structure (handles both dict and list formats)
+        counters = delta.get('counters', {})
+        if isinstance(counters, dict):
+            # LLM returns dict format: {"bullet-id": {"helpful_count": 1, ...}}
+            for bullet_id, counter_data in counters.items():
+                if not isinstance(counter_data, dict):
+                    errors.append(f"Counter for {bullet_id} is not a dict")
+                # Check for either count fields (from LLM) or delta fields (legacy)
+                if not any(k in counter_data for k in ['helpful_count', 'unhelpful_count', 'helpful_delta', 'harmful_delta']):
+                    errors.append(f"Counter for {bullet_id} has no update values")
+        elif isinstance(counters, list):
+            # Legacy list format: [{"id": "bullet-id", "helpful_delta": 1, ...}]
+            for counter in counters:
+                if not counter.get('id'):
+                    errors.append(f"Counter missing bullet id")
+                if 'helpful_delta' not in counter and 'harmful_delta' not in counter:
+                    errors.append(f"Counter {counter.get('id')} has no delta values")
 
         passed = len(errors) == 0
 
@@ -373,7 +405,13 @@ class StagedCurator:
 
         # Check if delta adds meaningful content
         remaining_bullets = len(delta.get('new_bullets', []))
-        remaining_counters = len(delta.get('counters', []))
+
+        # Handle both dict and list counter formats
+        counters = delta.get('counters', {})
+        if isinstance(counters, dict):
+            remaining_counters = len(counters)
+        else:
+            remaining_counters = len(counters)
 
         if remaining_bullets == 0 and remaining_counters == 0:
             notes.append("No meaningful content after quality filtering")
@@ -441,9 +479,10 @@ class StagedCurator:
 
         return task_specific
 
-    def _validate_counters(self, counters: List[Dict]) -> List[str]:
+    def _validate_counters(self, counters) -> List[str]:
         """
         Validate counter updates reference existing bullets.
+        Handles both dict and list formats.
 
         Returns:
             List of invalid bullet IDs
@@ -451,10 +490,17 @@ class StagedCurator:
         existing_ids = set(b['id'] for b in self.playbook.get('bullets', []))
         invalid = []
 
-        for counter in counters:
-            bullet_id = counter.get('id')
-            if bullet_id not in existing_ids:
-                invalid.append(bullet_id)
+        if isinstance(counters, dict):
+            # LLM format: {"bullet-id": {...}}
+            for bullet_id in counters.keys():
+                if bullet_id not in existing_ids:
+                    invalid.append(bullet_id)
+        elif isinstance(counters, list):
+            # Legacy format: [{"id": "bullet-id", ...}]
+            for counter in counters:
+                bullet_id = counter.get('id')
+                if bullet_id not in existing_ids:
+                    invalid.append(bullet_id)
 
         return invalid
 
@@ -547,13 +593,23 @@ class StagedCurator:
                 if bullet['id'] in normalized_tags:
                     bullet['tags'] = normalized_tags[bullet['id']]['normalized']
 
-        # Filter invalid counters
+        # Filter invalid counters (handle both dict and list formats)
         if delta_cleaned.get('counters'):
             invalid_counter_ids = set(signals.get('invalid_counters', []))
-            delta_cleaned['counters'] = [
-                c for c in delta_cleaned['counters']
-                if c['id'] not in invalid_counter_ids
-            ]
+            counters = delta_cleaned['counters']
+
+            if isinstance(counters, dict):
+                # LLM format: remove invalid keys
+                delta_cleaned['counters'] = {
+                    k: v for k, v in counters.items()
+                    if k not in invalid_counter_ids
+                }
+            elif isinstance(counters, list):
+                # Legacy format: remove invalid items
+                delta_cleaned['counters'] = [
+                    c for c in counters
+                    if c.get('id') not in invalid_counter_ids
+                ]
 
         return delta_cleaned
 
@@ -575,9 +631,27 @@ class StagedCurator:
         try:
             print(f"\n📝 Merging delta into playbook...")
 
-            # 1. Update counters
-            for counter in delta.get('counters', []):
-                self._apply_counter_update(counter)
+            # 1. Update counters (handle both dict and list formats)
+            counters = delta.get('counters', {})
+            if isinstance(counters, dict):
+                # LLM format: {"bullet-id": {"helpful_count": 1, ...}}
+                for bullet_id, counter_data in counters.items():
+                    # Convert dict format to legacy format for _apply_counter_update
+                    counter_dict = {'id': bullet_id}
+                    # Handle both absolute counts and deltas
+                    if 'helpful_count' in counter_data:
+                        counter_dict['helpful_delta'] = counter_data['helpful_count']
+                    if 'unhelpful_count' in counter_data:
+                        counter_dict['harmful_delta'] = counter_data['unhelpful_count']
+                    if 'helpful_delta' in counter_data:
+                        counter_dict['helpful_delta'] = counter_data['helpful_delta']
+                    if 'harmful_delta' in counter_data:
+                        counter_dict['harmful_delta'] = counter_data['harmful_delta']
+                    self._apply_counter_update(counter_dict)
+            elif isinstance(counters, list):
+                # Legacy format: [{"id": "bullet-id", "helpful_delta": 1, ...}]
+                for counter in counters:
+                    self._apply_counter_update(counter)
 
             # 2. Add new bullets
             for new_bullet in delta.get('new_bullets', []):
@@ -691,3 +765,134 @@ class StagedCurator:
     def get_curation_history(self) -> List[Dict]:
         """Return curation history."""
         return self.curation_history.copy()
+
+    def _synthesize_delta_with_llm(self, delta: Dict[str, Any], sample: Dict, execution_feedback: Dict) -> Optional[Dict]:
+        """
+        Use LLM (via curate-delta skill) to synthesize Reflector output into structured delta.
+
+        This implements Phase 1 of the ACE paper's Curator architecture:
+        "The Curator then synthesizes these lessons into compact delta entries..."
+
+        Args:
+            delta: Delta from Reflector
+            sample: Task sample metadata
+            execution_feedback: Execution feedback
+
+        Returns:
+            Synthesized delta dict or None if invocation fails
+        """
+        print(f"\n🔍 DEBUG StagedCurator._synthesize_delta_with_llm:")
+
+        try:
+            # Import skill invoker from same utils directory
+            from . import claude_code_skill_invoker as skill_invoker
+            import json
+
+            # Build OPTIMIZED prompt for curate-delta skill (reduce from 11k+ chars)
+            task_instruction = sample.get('instruction', 'Unknown')[:200]  # Truncate long instructions
+            task_outcome = 'Success' if execution_feedback.get('tgc', 0) == 1.0 else 'Failure'
+
+            # SUMMARIZE execution feedback instead of full dump
+            error_analysis = execution_feedback.get('error_analysis', {})
+
+            # Extract ONLY essential information
+            feedback_summary = {
+                'tgc': execution_feedback.get('tgc', 0),
+                'sgc': execution_feedback.get('sgc', 0),
+                'turns_used': execution_feedback.get('turns_used', 0),
+                'error_type': error_analysis.get('error_type', 'unknown'),
+                'error_messages': error_analysis.get('error_messages', [])[:3],  # Max 3 errors
+                'missing_patterns': error_analysis.get('missing_patterns', [])[:3],  # Max 3 patterns
+                'failed_apis': error_analysis.get('failed_apis', [])[:5]  # Max 5 APIs
+            }
+
+            # Also simplify delta - remove verbose fields
+            simplified_delta = {
+                'new_bullets': delta.get('new_bullets', [])[:5],  # Max 5 bullets
+                'counters': delta.get('counters', {}),
+                'error_type': delta.get('error_type', 'unknown')
+            }
+
+            skill_prompt = f"""# Task Metadata
+Instruction: {task_instruction}
+Outcome: {task_outcome} (TGC: {feedback_summary['tgc']}, SGC: {feedback_summary['sgc']})
+
+## Execution Summary
+- Turns used: {feedback_summary['turns_used']}
+- Error type: {feedback_summary['error_type']}
+- Error messages: {', '.join(feedback_summary['error_messages'])}
+- Missing patterns: {', '.join(feedback_summary['missing_patterns'])}
+- Failed APIs: {', '.join(feedback_summary['failed_apis'])}
+
+## Reflector's Proposed Delta
+```json
+{json.dumps(simplified_delta, indent=2)}
+```
+
+## Your Task
+Synthesize the Reflector's output into a high-quality delta proposal.
+- Validate bullet quality (specific, actionable, evidence-backed)
+- Check for redundancy with existing bullets
+- Structure counter updates for bullet feedback
+- Provide curation notes and quality assessment
+"""
+
+            print(f"   🎯 Invoking curate-delta skill (optimized prompt: {len(skill_prompt)} chars)...")
+            response = skill_invoker.invoke_skill("curate-delta", skill_prompt)
+            print(f"   ✅ LLM-powered curation successful ({len(response)} chars)")
+
+            # Debug: Show the raw response
+            print(f"   🔍 Raw LLM response preview (first 300 chars): {response[:300]}")
+
+            # Parse JSON response (handle markdown code fences)
+            response_clean = response.strip()
+            if response_clean.startswith('```json'):
+                response_clean = response_clean[7:]
+                if response_clean.endswith('```'):
+                    response_clean = response_clean[:-3]
+                response_clean = response_clean.strip()
+            elif response_clean.startswith('```'):
+                # Handle plain ``` without json specifier
+                response_clean = response_clean[3:]
+                if response_clean.endswith('```'):
+                    response_clean = response_clean[:-3]
+                response_clean = response_clean.strip()
+
+            # Debug: Show cleaned response
+            print(f"   🔍 Cleaned response preview (first 300 chars): {response_clean[:300]}")
+
+            # Try to parse as JSON - if it fails, try to extract the delta directly
+            try:
+                result = json.loads(response_clean)
+                synthesized_delta = result.get('delta')
+            except json.JSONDecodeError as e:
+                print(f"   ⚠️  JSON parse error: {e}")
+                print(f"   🔧 Attempting to use original delta format...")
+                # If LLM returns the delta directly without wrapping
+                try:
+                    synthesized_delta = json.loads(response_clean)
+                except:
+                    # If all else fails, try to find JSON in the response
+                    import re
+                    json_match = re.search(r'\{.*\}', response_clean, re.DOTALL)
+                    if json_match:
+                        try:
+                            synthesized_delta = json.loads(json_match.group())
+                            print(f"   ✅ Extracted JSON from response")
+                        except:
+                            synthesized_delta = None
+                    else:
+                        synthesized_delta = None
+
+            if synthesized_delta:
+                print(f"   ✅ RETURNING LLM-SYNTHESIZED DELTA")
+                print(f"      New bullets: {len(synthesized_delta.get('new_bullets', []))}")
+                print(f"      Counter updates: {len(synthesized_delta.get('counters', {}))}")
+                return synthesized_delta
+            else:
+                print(f"   ❌ LLM response missing 'delta' key")
+                return None
+
+        except Exception as e:
+            print(f"   ⚠️  Skill invocation failed: {e}")
+            return None

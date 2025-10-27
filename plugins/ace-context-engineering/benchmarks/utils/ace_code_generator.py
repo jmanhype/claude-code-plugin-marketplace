@@ -20,8 +20,15 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from bullet_retriever import BulletRetriever
-import claude_code_skill_invoker as skill_invoker
+try:
+    from .bullet_retriever import BulletRetriever
+except ImportError:
+    from bullet_retriever import BulletRetriever
+
+try:
+    from . import claude_code_skill_invoker as skill_invoker
+except ImportError:
+    import claude_code_skill_invoker as skill_invoker
 
 logger = logging.getLogger(__name__)
 
@@ -112,24 +119,13 @@ class ACECodeGenerator:
             relevant_bullets = []
 
         # Step 2: Generate code using bullets as guidance
-        strategies = [bullet.title for bullet in relevant_bullets]
+        logger.info(f"[Turn {turn}] Generating code with {len(relevant_bullets)} bullets...")
 
-        logger.info(f"[Turn {turn}] Generating code with {len(strategies)} strategies...")
+        prompt_payload = self._build_skill_prompt(instruction, apps, relevant_bullets)
+        prompt_json = json.dumps(prompt_payload, indent=2)
 
         try:
-            # Use the skill invoker to generate code
-            code = skill_invoker.generate_appworld_code(
-                instruction=instruction,
-                apps=apps,
-                strategies=strategies
-            )
-
-            logger.info(f"[Turn {turn}] Generated {len(code.splitlines())} lines of code")
-            logger.debug(f"Code preview:\n{code[:200]}...")
-
-            # Validate bullets were actually used (James Zou's reliability check)
-            self._validate_bullet_usage(code, relevant_bullets)
-
+            code = self._invoke_code_skill(prompt_json, instruction, apps, relevant_bullets)
             return code
 
         except Exception as e:
@@ -137,6 +133,128 @@ class ACECodeGenerator:
             # Fallback to basic template
             logger.warning("Falling back to basic code template")
             return self._generate_fallback_code(instruction, apps)
+
+    def _build_skill_prompt(
+        self,
+        instruction: str,
+        apps: List[str],
+        bullets: List
+    ) -> str:
+        """
+        Build prompt for generate-appworld-code skill.
+
+        Args:
+            instruction: Task instruction
+            apps: Available apps
+            bullets: Retrieved bullets with title and content
+
+        Returns:
+            Formatted prompt for the skill
+        """
+        payload = {
+            "instruction": instruction,
+            "apps": apps,
+            "strategies": [],
+            "bullets": [],
+            "environment": {
+                "mode": "appworld_offline",
+                "credentials": {
+                    "username": "user@example.com",
+                    "password": "password"
+                },
+                "requirements": [
+                    "Return ONLY executable Python code.",
+                    "Do not request user permission or external credentials.",
+                    "Always call apis.supervisor.complete_task() when successful.",
+                    "Handle errors with try/except and report via print before raising."
+                ]
+            }
+        }
+
+        for bullet in bullets:
+            title = getattr(bullet, "title", str(bullet))
+            content = getattr(bullet, "content", "")
+            payload["strategies"].append(title if title else content[:80])
+
+            payload["bullets"].append({
+                "id": getattr(bullet, "bullet_id", getattr(bullet, "id", "")),
+                "title": title,
+                "content": content,
+                "tags": getattr(bullet, "tags", []),
+                "confidence": getattr(bullet, "confidence", 0.5),
+            })
+
+        return payload
+
+    def _invoke_code_skill(self, prompt_json: str, instruction: str, apps: List[str], bullets: List) -> str:
+        """Invoke code generation skill with retry enforcing code-only output."""
+
+        response = skill_invoker.invoke_skill("generate-appworld-code", prompt_json)
+        code = self._extract_code_block(response)
+
+        if self._looks_like_code(code):
+            self._validate_bullet_usage(code, bullets)
+            return code
+
+        # Reinforce instructions once
+        strict_payload = json.loads(prompt_json)
+        strict_payload["directives"] = [
+            "Return ONLY executable Python code. No explanations, no markdown, no commentary.",
+            "Code must call apis.supervisor.complete_task().",
+        ]
+        strict_prompt = json.dumps(strict_payload, indent=2)
+
+        response_strict = skill_invoker.invoke_skill("generate-appworld-code", strict_prompt)
+        code_strict = self._extract_code_block(response_strict)
+
+        if self._looks_like_code(code_strict):
+            self._validate_bullet_usage(code_strict, bullets)
+            return code_strict
+
+        raise RuntimeError(
+            "generate-appworld-code skill did not return executable code after reinforcement"
+        )
+
+    def _extract_code_block(self, response: str) -> str:
+        """Extract code from skill response, handling fences and wrappers."""
+
+        if not response:
+            return ""
+
+        text = response.strip()
+
+        if text.startswith("```"):
+            fence = "```python" if text.startswith("```python") else "```"
+            text = text[len(fence):]
+            if text.endswith("```"):
+                text = text[:-3]
+            text = text.strip()
+
+        # If the response is JSON with a code field, extract it
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError:
+            return text
+
+        for key in ("code", "python", "solution"):
+            if isinstance(payload, dict) and key in payload and isinstance(payload[key], str):
+                return payload[key].strip()
+
+        return text
+
+    def _looks_like_code(self, code: str) -> bool:
+        """Heuristic to determine if a string resembles executable Python code."""
+
+        if not code or len(code) < 20:
+            return False
+
+        if "apis." not in code:
+            return False
+
+        if "complete_task" not in code:
+            return False
+
+        return True
 
     def _validate_bullet_usage(self, code: str, bullets: List) -> None:
         """

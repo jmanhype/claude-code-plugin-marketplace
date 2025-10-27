@@ -10,7 +10,13 @@ from .reflector import Reflector
 from .curator import Curator  # Old curator (for backwards compatibility)
 from .curator_staged import StagedCurator  # New three-stage curator
 from .embeddings import EmbeddingsDeduplicator  # TF-IDF fallback
-from .embeddings_faiss import FAISSDeduplicator  # FAISS-based (recommended)
+
+try:
+    from .embeddings_faiss import FAISSDeduplicator  # FAISS-based (recommended)
+except Exception as e:
+    FAISSDeduplicator = None
+    print(f"⚠️  FAISS-based deduplicator unavailable: {e}")
+
 from .claude_code_method import ClaudeCodeACE
 
 __all__ = [

@@ -7,7 +7,7 @@ pattern-matching approach with bullet-driven adaptation.
 
 import json
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 
 from .base_method import AdaptiveMethod
@@ -157,15 +157,20 @@ class ClaudeCodeACE(AdaptiveMethod):
 
         return delta
 
-    def curate(self, delta: Dict) -> Dict:
+    def curate(self, delta: Dict, sample: Optional[Dict] = None, execution_feedback: Optional[Dict] = None) -> Dict:
         """
         Validate and merge delta.
 
         This ACTUALLY checks for duplicates and merges deltas,
         unlike the stub in the old implementation.
+
+        Args:
+            delta: Delta from Reflector
+            sample: Task sample metadata (for LLM-based curation)
+            execution_feedback: Execution feedback (for LLM-based curation)
         """
-        # Validate and normalize using three-stage curator
-        curation_result = self.curator.curate_delta(delta)
+        # Validate and normalize using three-stage curator (with LLM synthesis)
+        curation_result = self.curator.curate_delta(delta, sample=sample, execution_feedback=execution_feedback)
 
         # Merge if passed all quality gates
         if curation_result.passed and not curation_result.requires_human_review:
@@ -259,7 +264,9 @@ class ClaudeCodeACE(AdaptiveMethod):
                 )
 
                 # 3. CURATE
-                curation_result = self.curate(delta)
+                # Pass sample and execution_result for LLM-based curation
+                execution_feedback = generation_result['execution_result'].get('execution_feedback', {})
+                curation_result = self.curate(delta, sample=sample, execution_feedback=execution_feedback)
 
                 # Track metrics
                 if curation_result.passed and curation_result.clean_delta:

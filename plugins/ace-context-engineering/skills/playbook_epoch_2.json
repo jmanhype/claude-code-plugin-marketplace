@@ -22,9 +22,9 @@
       "prerequisites": [],
       "author": "seed",
       "status": "active",
-      "helpful_count": 125,
-      "harmful_count": 3,
-      "last_updated": "2025-10-27T12:33:11.269633",
+      "helpful_count": 118,
+      "harmful_count": 2,
+      "last_updated": "2025-10-27T01:29:30.644912",
       "created": "2025-10-26T23:00:00Z"
     },
     {
@@ -45,9 +45,9 @@
       "prerequisites": [],
       "author": "seed",
       "status": "active",
-      "helpful_count": 123,
+      "helpful_count": 118,
       "harmful_count": 2,
-      "last_updated": "2025-10-27T02:59:40.558445",
+      "last_updated": "2025-10-27T01:29:30.644915",
       "created": "2025-10-26T23:00:00Z"
     },
     {
@@ -66,9 +66,9 @@
       "prerequisites": [],
       "author": "seed",
       "status": "active",
-      "helpful_count": 125,
-      "harmful_count": 3,
-      "last_updated": "2025-10-27T12:33:11.269631",
+      "helpful_count": 118,
+      "harmful_count": 2,
+      "last_updated": "2025-10-27T01:29:30.644909",
       "created": "2025-10-26T23:00:00Z"
     },
     {
@@ -87,9 +87,9 @@
       "prerequisites": [],
       "author": "seed",
       "status": "active",
-      "helpful_count": 125,
+      "helpful_count": 118,
       "harmful_count": 2,
-      "last_updated": "2025-10-27T07:28:18.738967",
+      "last_updated": "2025-10-27T01:29:30.644911",
       "created": "2025-10-26T23:00:00Z"
     },
     {
@@ -112,9 +112,9 @@
       ],
       "author": "seed",
       "status": "active",
-      "helpful_count": 125,
-      "harmful_count": 3,
-      "last_updated": "2025-10-27T12:33:11.269627",
+      "helpful_count": 118,
+      "harmful_count": 2,
+      "last_updated": "2025-10-27T01:29:30.644907",
       "created": "2025-10-26T23:00:00Z"
     },
     {
@@ -172,89 +172,13 @@
       "created": "2025-10-27T01:28:56.281941",
       "last_updated": "2025-10-27T01:28:56.281946",
       "links": []
-    },
-    {
-      "id": "bullet-2025-10-27-025940",
-      "title": "Review general API implementation",
-      "content": "Task 'What is the title of the most-liked song in my Spotify playlists.' failed with logic_error. Review API usage and error handling.",
-      "tags": [
-        "api",
-        "debugging",
-        "app.general"
-      ],
-      "evidence": [
-        {
-          "type": "execution",
-          "ref": "fallback_reflection",
-          "note": "Fallback bullet (LLM reflection unavailable)"
-        }
-      ],
-      "confidence": "low",
-      "scope": "app",
-      "created": "2025-10-27T02:59:40.558459",
-      "last_updated": "2025-10-27T12:33:11.269624",
-      "helpful_count": 2,
-      "harmful_count": 1,
-      "status": "active"
-    },
-    {
-      "id": "bullet-2025-10-27-072605",
-      "title": "Review general API implementation",
-      "content": "Task 'What is the title of the most-liked song in my Spotify playlists.' failed with logic_error. Review API usage and error handling.",
-      "tags": [
-        "api",
-        "debugging",
-        "app.general"
-      ],
-      "evidence": [
-        {
-          "type": "execution",
-          "ref": "fallback_reflection",
-          "note": "Fallback bullet (LLM reflection unavailable)"
-        }
-      ],
-      "confidence": "low",
-      "scope": "app",
-      "created": "2025-10-27T07:28:18.738970",
-      "last_updated": "2025-10-27T12:33:11.269629",
-      "helpful_count": 0,
-      "harmful_count": 1,
-      "status": "active"
-    },
-    {
-      "id": "bullet-2025-10-27-123311",
-      "title": "Verify spotify API logic and requirements",
-      "content": "When implementing spotify operations: Check task logic and requirements; Missing login() call for spotify",
-      "tags": [
-        "logic",
-        "debugging",
-        "api",
-        "app.spotify"
-      ],
-      "evidence": [
-        {
-          "type": "execution",
-          "ref": "82e2fac_1",
-          "note": "Task failed with logic_error"
-        }
-      ],
-      "helpful_count": 0,
-      "harmful_count": 0,
-      "confidence": "low",
-      "scope": "app",
-      "prerequisites": [],
-      "author": "reflector_fallback",
-      "status": "active",
-      "created": "2025-10-27T12:33:11.268061",
-      "last_updated": "2025-10-27T12:33:11.268063",
-      "links": []
     }
   ],
   "metadata": {
-    "total_bullets": 10,
-    "active_bullets": 10,
+    "total_bullets": 7,
+    "active_bullets": 7,
     "deprecated_bullets": 0,
     "archived_bullets": 0,
-    "last_curated": "2025-10-27T12:33:11.269640"
+    "last_curated": "2025-10-27T01:29:30.644923"
   }
 }

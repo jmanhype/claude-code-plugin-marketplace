@@ -107,7 +107,7 @@ class AppWorldLoader:
 
         # Common AppWorld apps
         app_keywords = [
-            'venmo', 'gmail', 'slack', 'contacts', 'calendar',
+            'spotify', 'venmo', 'gmail', 'slack', 'contacts', 'calendar',
             'phone', 'messaging', 'email', 'notes', 'reminders'
         ]
 

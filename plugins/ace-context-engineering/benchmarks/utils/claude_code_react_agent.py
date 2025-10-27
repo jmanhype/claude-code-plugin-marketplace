@@ -28,10 +28,14 @@ except ImportError:
 
 # Import ACE Code Generator (closes learning loop)
 try:
-    from ace_code_generator import ACECodeGenerator
+    from .ace_code_generator import ACECodeGenerator
     ACE_GENERATOR_AVAILABLE = True
 except ImportError:
-    ACE_GENERATOR_AVAILABLE = False
+    try:
+        from ace_code_generator import ACECodeGenerator
+        ACE_GENERATOR_AVAILABLE = True
+    except ImportError:
+        ACE_GENERATOR_AVAILABLE = False
 
 
 class ClaudeCodeReActAgent:
