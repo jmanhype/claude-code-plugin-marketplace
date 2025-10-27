@@ -1,0 +1,28 @@
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Claude Code plugin logs
+.claude/hooks/logs/
+
+# Benchmark outputs (track results separately)
+benchmarks/experiments/
+benchmarks/results/*.json
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*~
+.DS_Store
+
+# Virtual environments
+venv/
+env/
+
+# Archive (local development only)
+archive/
