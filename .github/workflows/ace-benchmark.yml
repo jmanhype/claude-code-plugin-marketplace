@@ -1,4 +1,4 @@
-name: ACE Benchmark
+name: ACE Benchmark (Action-Based)
 
 on:
   schedule:
@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       num_tasks:
-        description: 'Number of tasks to run (1-50)'
+        description: 'Number of tasks to run (1-10)'
         required: false
-        default: '5'
+        default: '3'
         type: string
 
       split:
@@ -22,10 +22,12 @@ on:
           - dev
           - train
           - test_normal
-          - test_challenge
 
 permissions:
-  contents: write  # For committing results
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
 
 jobs:
   benchmark:
@@ -44,9 +46,8 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install ACE dependencies
+      - name: Install dependencies
         run: |
-          cd plugins/ace-context-engineering
           pip install anthropic requests scikit-learn numpy
 
       - name: Setup AppWorld
@@ -55,57 +56,147 @@ jobs:
           git clone https://github.com/stonybrooknlp/appworld.git
           cd appworld
           pip install -e .
-
-      - name: Download AppWorld data
-        run: |
-          cd /tmp/appworld
           python -m appworld.apps download || true
           python -m appworld.data download || true
+
+      - name: Load task list
+        id: load_tasks
+        run: |
+          cd plugins/ace-context-engineering
+          python3 << 'PYTHON'
+          import json
+          import sys
+          from pathlib import Path
+
+          # Load AppWorld dataset
+          sys.path.insert(0, str(Path.cwd()))
+          from benchmarks.utils.appworld_loader import AppWorldLoader
+
+          loader = AppWorldLoader("/tmp/appworld/data")
+          samples = loader.load_split("${{ inputs.split || 'dev' }}", max_samples=int("${{ inputs.num_tasks || '3' }}"))
+
+          # Save task list
+          tasks = [
+              {
+                  "task_id": s["task_id"],
+                  "instruction": s["instruction"],
+                  "apps": s.get("apps", ["general"])
+              }
+              for s in samples
+          ]
+
+          with open("tasks_to_run.json", "w") as f:
+              json.dump(tasks, f)
+
+          print(f"Loaded {len(tasks)} tasks")
+          PYTHON
 
       - name: Create results directory
         run: |
           mkdir -p plugins/ace-context-engineering/results
+          echo '{"tasks": [], "metadata": {}}' > plugins/ace-context-engineering/results/run-${{ github.run_number }}.json
 
+      # Run ACE for each task using claude-code-action
       - name: Run ACE Benchmarks
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          cd plugins/ace-context-engineering
-          python -m benchmarks.run_appworld_standalone \
-            --split "${{ inputs.split || 'dev' }}" \
-            --max-samples ${{ inputs.num_tasks || '5' }} \
-            --playbook skills/playbook.json \
-            --output results/run-${{ github.run_number }}.json \
-            2>&1 | tee results/run-${{ github.run_number }}.log
+        uses: grll/claude-code-action@beta
+        with:
+          use_oauth: true
+          claude_access_token: ${{ secrets.CLAUDE_ACCESS_TOKEN }}
+          claude_refresh_token: ${{ secrets.CLAUDE_REFRESH_TOKEN }}
+          claude_expires_at: ${{ secrets.CLAUDE_EXPIRES_AT }}
+          secrets_admin_pat: ${{ secrets.SECRETS_ADMIN_PAT }}
 
-      - name: Generate Markdown Report
+          timeout_minutes: "90"
+          max_turns: "15"
+
+          # Direct prompt for ACE benchmark execution
+          direct_prompt: |
+            You are running ACE (Adaptive Context Engineering) benchmarks on AppWorld tasks.
+
+            CONTEXT:
+            - AppWorld environment is set up at /tmp/appworld
+            - ACE playbook is at plugins/ace-context-engineering/skills/playbook.json
+            - Task list is at plugins/ace-context-engineering/tasks_to_run.json
+            - Results should go to plugins/ace-context-engineering/results/run-${{ github.run_number }}.json
+
+            YOUR JOB:
+            1. Read the task list from tasks_to_run.json
+            2. For each task:
+               a. Load the playbook and retrieve relevant bullets
+               b. Generate AppWorld code using ACE code generator
+               c. Execute the code in AppWorld
+               d. Record results (TGC, SGC, success/failure)
+            3. Save all results to the results JSON file
+            4. Update the playbook with learned bullets from failures
+
+            IMPORTANT:
+            - Use the ACE code generator at plugins/ace-context-engineering/benchmarks/utils/ace_code_generator.py
+            - Apply bullets from the playbook during code generation
+            - Update playbook.json with new bullets from failures
+            - Use the AppWorld environment for execution
+
+            Run the benchmarks now and report results.
+
+          # Allow necessary tools
+          allowed_tools: |
+            Bash
+            Edit
+            Read
+            Write
+
+      - name: Generate Report
         if: always()
         run: |
           cd plugins/ace-context-engineering
-          cat > results/run-${{ github.run_number }}.md << 'EOF'
-          # ACE Benchmark Run #${{ github.run_number }}
+          python3 << 'PYTHON'
+          import json
+          from datetime import datetime
 
-          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          try:
+              with open("results/run-${{ github.run_number }}.json") as f:
+                  results = json.load(f)
+          except:
+              results = {"tasks": [], "metadata": {}}
+
+          # Generate markdown report
+          report = f"""# ACE Benchmark Run #${{ github.run_number }}
+
+          **Date**: {datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}
           **Split**: ${{ inputs.split || 'dev' }}
-          **Tasks**: ${{ inputs.num_tasks || '5' }}
+          **Tasks Requested**: ${{ inputs.num_tasks || '3' }}
+          **Tasks Completed**: {len(results.get('tasks', []))}
           **Workflow**: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-          ## Results
+          ## Summary
 
-          See `run-${{ github.run_number }}.json` for detailed results.
+          """
 
-          ## Logs
+          tasks = results.get('tasks', [])
+          if tasks:
+              successful = sum(1 for t in tasks if t.get('success', False))
+              avg_tgc = sum(t.get('tgc', 0) for t in tasks) / len(tasks)
 
-          See `run-${{ github.run_number }}.log` for execution logs.
+              report += f"""
+          - **Success Rate**: {successful}/{len(tasks)} ({successful/len(tasks)*100:.1f}%)
+          - **Average TGC**: {avg_tgc:.3f}
 
-          ## Playbook Status
+          ## Task Results
 
-          Bullets before: $(jq '.metadata.total_bullets' skills/playbook.json)
+          """
 
-          ---
+              for i, task in enumerate(tasks, 1):
+                  status = "✅" if task.get('success') else "❌"
+                  report += f"{i}. {status} `{task.get('task_id', 'unknown')}` - TGC: {task.get('tgc', 0):.2f}\n"
+          else:
+              report += "\n⚠️ No tasks completed\n"
 
-          🤖 Generated with [Claude Code](https://claude.com/claude-code)
-          EOF
+          report += "\n---\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n"
+
+          with open(f"results/run-${{ github.run_number }}.md", "w") as f:
+              f.write(report)
+
+          print(report)
+          PYTHON
 
       - name: Commit Results
         if: always()
@@ -121,7 +212,7 @@ jobs:
           else
             git commit -m "chore: ACE benchmark results run #${{ github.run_number }}
 
-          - Tasks: ${{ inputs.num_tasks || '5' }}
+          - Tasks: ${{ inputs.num_tasks || '3' }}
           - Split: ${{ inputs.split || 'dev' }}
           - Workflow: ${{ github.run_id }}
 
@@ -131,7 +222,7 @@ jobs:
             git push
           fi
 
-      - name: Upload Results as Artifact
+      - name: Upload Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
