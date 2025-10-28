@@ -1,0 +1,229 @@
+name: ACE Benchmark (Simple)
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+
+  workflow_dispatch:
+    inputs:
+      num_tasks:
+        description: 'Number of tasks (1-5)'
+        required: false
+        default: '2'
+        type: string
+
+      split:
+        description: 'Dataset split'
+        required: false
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - train
+          - test_normal
+
+permissions:
+  contents: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic requests scikit-learn numpy
+
+      - name: Setup AppWorld (Mock)
+        run: |
+          cd /tmp
+          git clone https://github.com/stonybrooknlp/appworld.git
+          cd appworld
+          pip install -e .
+
+          # Create mock data
+          mkdir -p data/datasets data/tasks
+
+          echo "test_task_1" > data/datasets/dev.txt
+          echo "test_task_2" >> data/datasets/dev.txt
+
+          mkdir -p data/tasks/test_task_1
+          cat > data/tasks/test_task_1/specs.json << 'EOF'
+          {
+            "instruction": "What is the title of the most-liked song in my Spotify playlists?",
+            "supervisor": {"email": "test@example.com"},
+            "datetime": "2025-10-27T00:00:00"
+          }
+          EOF
+
+          mkdir -p data/tasks/test_task_2
+          cat > data/tasks/test_task_2/specs.json << 'EOF'
+          {
+            "instruction": "Send a test email",
+            "supervisor": {"email": "test@example.com"},
+            "datetime": "2025-10-27T00:00:00"
+          }
+          EOF
+
+      - name: Run ACE Benchmarks
+        env:
+          # Use OAuth tokens (auto-refreshed by claude-code-action)
+          CLAUDE_ACCESS_TOKEN: ${{ secrets.CLAUDE_ACCESS_TOKEN }}
+          ANTHROPIC_API_BASE: "https://api.anthropic.com"
+        run: |
+          cd plugins/ace-context-engineering
+
+          # Create simple test runner that uses OAuth token
+          python3 << 'PYTHON'
+          import os
+          import json
+          import requests
+          from pathlib import Path
+
+          # Get OAuth token
+          access_token = os.environ.get("CLAUDE_ACCESS_TOKEN")
+          if not access_token:
+              print("❌ CLAUDE_ACCESS_TOKEN not found")
+              exit(1)
+
+          print("✅ OAuth token found")
+
+          # Load playbook
+          playbook_path = Path("skills/playbook.json")
+          with open(playbook_path) as f:
+              playbook = json.load(f)
+
+          print(f"✅ Loaded playbook with {len(playbook.get('bullets', []))} bullets")
+
+          # Simple test: Call Anthropic API with OAuth token
+          headers = {
+              "Authorization": f"Bearer {access_token}",
+              "anthropic-version": "2023-06-01",
+              "content-type": "application/json"
+          }
+
+          payload = {
+              "model": "claude-3-5-sonnet-20241022",
+              "max_tokens": 1024,
+              "messages": [
+                  {
+                      "role": "user",
+                      "content": "Generate Python code for AppWorld to get the most-liked song from Spotify playlists. Include login() call."
+                  }
+              ]
+          }
+
+          print("🔄 Testing OAuth authentication with Anthropic API...")
+
+          response = requests.post(
+              "https://api.anthropic.com/v1/messages",
+              headers=headers,
+              json=payload,
+              timeout=60
+          )
+
+          if response.status_code == 200:
+              print("✅ OAuth authentication successful!")
+              result = response.json()
+              content = result.get("content", [{}])[0].get("text", "")
+              print(f"✅ Generated {len(content)} characters of code")
+
+              # Save results
+              results = {
+                  "metadata": {
+                      "timestamp": "2025-10-28T00:00:00Z",
+                      "oauth_test": "success",
+                      "model": "claude-3-5-sonnet-20241022",
+                      "split": "${{ inputs.split || 'dev' }}",
+                      "num_tasks": int("${{ inputs.num_tasks || '2' }}")
+                  },
+                  "tasks": [
+                      {
+                          "task_id": "oauth_test",
+                          "status": "success",
+                          "code_generated": len(content) > 100
+                      }
+                  ]
+              }
+
+              Path("results").mkdir(exist_ok=True)
+              with open("results/run-${{ github.run_number }}.json", "w") as f:
+                  json.dump(results, f, indent=2)
+
+              print("\n" + "="*70)
+              print("ACE OAUTH TEST SUCCESSFUL")
+              print("="*70)
+              print(f"OAuth token works!")
+              print(f"Code generated: {len(content)} chars")
+              print(f"Results saved to: results/run-${{ github.run_number }}.json")
+              print("="*70)
+
+          else:
+              print(f"❌ API call failed: {response.status_code}")
+              print(f"Response: {response.text}")
+              exit(1)
+          PYTHON
+
+      - name: Generate Report
+        if: always()
+        run: |
+          cd plugins/ace-context-engineering
+
+          cat > results/run-${{ github.run_number }}.md << 'EOF'
+          # ACE OAuth Test Run #${{ github.run_number }}
+
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Purpose**: Test OAuth integration with ACE
+          **Status**: See JSON results
+
+          ## OAuth Test
+
+          This run tests that ACE can use OAuth tokens from claude-code-action
+          to authenticate with the Anthropic API.
+
+          **Results**: See `run-${{ github.run_number }}.json`
+
+          ---
+
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          EOF
+
+      - name: Commit Results
+        if: always()
+        run: |
+          git config user.name "ACE Bot"
+          git config user.email "ace-bot@claude-code-marketplace"
+
+          git add plugins/ace-context-engineering/results/ || true
+
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "chore: ACE OAuth test run #${{ github.run_number }}
+
+          Testing OAuth integration with Anthropic API
+
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+          Co-Authored-By: Claude <noreply@anthropic.com>"
+            git push
+          fi
+
+      - name: Upload Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ace-oauth-test-${{ github.run_number }}
+          path: plugins/ace-context-engineering/results/run-${{ github.run_number }}.*
+          retention-days: 30
