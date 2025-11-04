@@ -134,12 +134,32 @@ class OpenAILLM(LLMClient):
             data = json.loads(raw)
             return TradingDecision.from_json(data, raw)
 
-        except Exception as e:
-            # Fail safe to NO_TRADE on error
+        except ImportError as e:
             fallback = {
                 "decision": "NO_TRADE",
                 "actions": [],
-                "rationale": f"LLM error: {str(e)[:200]}"
+                "rationale": f"OpenAI library not installed: {str(e)[:180]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+        except json.JSONDecodeError as e:
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"Invalid JSON from OpenAI: {str(e)[:180]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+        except (KeyError, ValueError) as e:
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"Invalid decision format: {str(e)[:180]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+        except Exception as e:
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"OpenAI API error: {str(e)[:180]}"
             }
             return TradingDecision.from_json(fallback, str(e))
 
@@ -185,12 +205,46 @@ class DeepSeekLLM(LLMClient):
             data = json.loads(raw)
             return TradingDecision.from_json(data, raw)
 
-        except Exception as e:
-            # Fail safe to NO_TRADE on error
+        except ImportError as e:
             fallback = {
                 "decision": "NO_TRADE",
                 "actions": [],
-                "rationale": f"LLM error: {str(e)[:200]}"
+                "rationale": f"requests library not installed: {str(e)[:180]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+        except requests.exceptions.Timeout as e:
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"DeepSeek API timeout: {str(e)[:180]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+        except requests.exceptions.HTTPError as e:
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"DeepSeek HTTP error: {str(e)[:180]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+        except json.JSONDecodeError as e:
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"Invalid JSON from DeepSeek: {str(e)[:180]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+        except (KeyError, ValueError) as e:
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"Invalid decision format: {str(e)[:180]}"
+            }
+            return TradingDecision.from_json(fallback, str(e))
+        except Exception as e:
+            fallback = {
+                "decision": "NO_TRADE",
+                "actions": [],
+                "rationale": f"DeepSeek API error: {str(e)[:180]}"
             }
             return TradingDecision.from_json(fallback, str(e))
 
