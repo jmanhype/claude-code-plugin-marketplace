@@ -1,15 +1,15 @@
-# ACE Benchmark Run #55
+# ACE OAuth Test Run #55
 
-**Date**: 2025-12-19 02:33:35 UTC
-**Split**: dev
-**Tasks Requested**: 3
-**Tasks Completed**: 0
-**Workflow**: https://github.com/jmanhype/claude-code-plugin-marketplace/actions/runs/20357878205
+**Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+**Purpose**: Test OAuth integration with ACE
+**Status**: See JSON results
 
-## Summary
+## OAuth Test
 
+This run tests that ACE can use OAuth tokens from claude-code-action
+to authenticate with the Anthropic API.
 
-⚠️ No tasks completed
+**Results**: See `run-55.json`
 
 ---
 
