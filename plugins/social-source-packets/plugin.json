@@ -1,0 +1,33 @@
+{
+  "name": "social-source-packets",
+  "displayName": "Social Source Packets",
+  "version": "1.0.0",
+  "description": "Prepare reviewed public X/Twitter source packets for launch notes, outreach, social proof, and approval-gated posts. Supports manually pasted notes, browser exports, API exports, and optional TweetClaw/OpenClaw output.",
+  "author": "Xquik",
+  "license": "MIT",
+  "repository": "https://github.com/Xquik-dev/tweetclaw",
+  "helpers": [
+    {
+      "name": "tweetclaw-openclaw-plugin",
+      "source": "https://github.com/Xquik-dev/tweetclaw",
+      "description": "Optional OpenClaw plugin for X/Twitter search, replies, public source collection, media workflows, monitors, webhooks, follower exports, giveaway draws, and approval-gated post actions."
+    }
+  ],
+  "tags": [
+    "social-media",
+    "twitter",
+    "x",
+    "source-packets",
+    "openclaw",
+    "tweetclaw",
+    "approval"
+  ],
+  "category": "social-media",
+  "homepage": "https://github.com/Xquik-dev/tweetclaw",
+  "documentation": "https://github.com/Xquik-dev/tweetclaw#readme",
+  "configuration": {
+    "optional": {
+      "XQUIK_API_KEY": "Optional API key stored in OpenClaw plugin config for account-backed TweetClaw workflows"
+    }
+  }
+}

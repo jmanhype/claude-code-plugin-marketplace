@@ -1,12 +1,12 @@
 # claude-code-plugin-marketplace
 
-Collection of 23 plugins for Claude Code. Each plugin is a directory under `plugins/` containing a `plugin.json` manifest, a `README.md`, and in some cases implementation code.
+Collection of 24 plugins for Claude Code. Each plugin is a directory under `plugins/` containing a `plugin.json` manifest, a `README.md`, and in some cases implementation code.
 
 ## Status
 
 Mixed. Some plugins (quant-trading-system, code-safety-monitor, ace-context-engineering) contain implementation code. Most plugins are manifest + README definitions that describe agent prompts and workflows. No centralized test suite.
 
-## Plugin Catalog (23)
+## Plugin Catalog (24)
 
 | Plugin | Category | What It Contains |
 |---|---|---|
@@ -25,6 +25,7 @@ Mixed. Some plugins (quant-trading-system, code-safety-monitor, ace-context-engi
 | `hive-mind-orchestration` | Distributed | Plugin manifest. Distributed decision-making. |
 | `testing-qa-framework` | Testing | Plugin manifest. TDD agents and test automation. |
 | `api-docs-generator` | Documentation | Plugin manifest. OpenAPI/Swagger generation. |
+| `social-source-packets` | Social Media | Plugin manifest and README. Public X/Twitter source packets for launch notes, outreach, social proof, and approval-gated posts. |
 | `cicd-automation` | DevOps | Plugin manifest. GitHub Actions automation. |
 | `mobile-automation` | Mobile | Plugin manifest. React Native + ClassDojo workflows. |
 | `performance-optimization` | Optimization | Plugin manifest. Load balancing and benchmarks. |

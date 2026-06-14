@@ -71,6 +71,20 @@
       "description": "OpenAPI/Swagger documentation generation and API documentation automation"
     },
     {
+      "name": "social-source-packets",
+      "source": "./plugins/social-source-packets",
+      "description": "Public X/Twitter source packet workflow for launch notes, outreach, social proof, and approval-gated posts",
+      "version": "1.0.0",
+      "author": {
+        "name": "Xquik"
+      },
+      "license": "MIT",
+      "keywords": ["social-media", "twitter", "x", "source-packets", "openclaw", "tweetclaw", "approval"],
+      "category": "social-media",
+      "homepage": "https://github.com/Xquik-dev/tweetclaw",
+      "repository": "https://github.com/Xquik-dev/tweetclaw"
+    },
+    {
       "name": "cicd-automation",
       "source": "./plugins/cicd-automation",
       "description": "GitHub Actions workflows, DevOps automation, and CI/CD pipeline management"
