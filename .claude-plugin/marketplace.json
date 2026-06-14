@@ -81,8 +81,9 @@
       "license": "MIT",
       "keywords": ["social-media", "twitter", "x", "source-packets", "openclaw", "tweetclaw", "approval"],
       "category": "social-media",
-      "homepage": "https://github.com/Xquik-dev/tweetclaw",
-      "repository": "https://github.com/Xquik-dev/tweetclaw"
+      "homepage": "https://github.com/jmanhype/claude-code-plugin-marketplace/tree/main/plugins/social-source-packets",
+      "repository": "https://github.com/jmanhype/claude-code-plugin-marketplace",
+      "documentation": "https://github.com/jmanhype/claude-code-plugin-marketplace/blob/main/plugins/social-source-packets/README.md"
     },
     {
       "name": "cicd-automation",

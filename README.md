@@ -39,7 +39,7 @@ Mixed. Some plugins (quant-trading-system, code-safety-monitor, ace-context-engi
 
 ```
 .claude-plugin/
-  marketplace.json       # Plugin registry (23 entries)
+  marketplace.json       # Plugin registry (24 entries)
 
 plugins/
   <plugin-name>/

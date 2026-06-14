@@ -5,7 +5,7 @@
   "description": "Prepare reviewed public X/Twitter source packets for launch notes, outreach, social proof, and approval-gated posts. Supports manually pasted notes, browser exports, API exports, and optional TweetClaw/OpenClaw output.",
   "author": "Xquik",
   "license": "MIT",
-  "repository": "https://github.com/Xquik-dev/tweetclaw",
+  "repository": "https://github.com/jmanhype/claude-code-plugin-marketplace",
   "helpers": [
     {
       "name": "tweetclaw-openclaw-plugin",
@@ -23,8 +23,8 @@
     "approval"
   ],
   "category": "social-media",
-  "homepage": "https://github.com/Xquik-dev/tweetclaw",
-  "documentation": "https://github.com/Xquik-dev/tweetclaw#readme",
+  "homepage": "https://github.com/jmanhype/claude-code-plugin-marketplace/tree/main/plugins/social-source-packets",
+  "documentation": "https://github.com/jmanhype/claude-code-plugin-marketplace/blob/main/plugins/social-source-packets/README.md",
   "configuration": {
     "optional": {
       "XQUIK_API_KEY": "Optional API key stored in OpenClaw plugin config for account-backed TweetClaw workflows"
