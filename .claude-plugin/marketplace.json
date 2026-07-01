@@ -71,6 +71,21 @@
       "description": "OpenAPI/Swagger documentation generation and API documentation automation"
     },
     {
+      "name": "social-source-packets",
+      "source": "./plugins/social-source-packets",
+      "description": "Public X/Twitter source packet workflow for launch notes, outreach, social proof, and approval-gated posts",
+      "version": "1.0.0",
+      "author": {
+        "name": "Xquik"
+      },
+      "license": "MIT",
+      "keywords": ["social-media", "twitter", "x", "source-packets", "openclaw", "tweetclaw", "approval"],
+      "category": "social-media",
+      "homepage": "https://github.com/jmanhype/claude-code-plugin-marketplace/tree/main/plugins/social-source-packets",
+      "repository": "https://github.com/jmanhype/claude-code-plugin-marketplace",
+      "documentation": "https://github.com/jmanhype/claude-code-plugin-marketplace/blob/main/plugins/social-source-packets/README.md"
+    },
+    {
       "name": "cicd-automation",
       "source": "./plugins/cicd-automation",
       "description": "GitHub Actions workflows, DevOps automation, and CI/CD pipeline management"
